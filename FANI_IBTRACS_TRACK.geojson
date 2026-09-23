@@ -1,0 +1,77 @@
+{
+  "type": "FeatureCollection",
+  "name": "FANI_IBTRACS_TRACK",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [88.5, 5.2], [88.2, 5.5], [87.8, 6.2], [87.1, 7.1],
+          [86.5, 8.4], [86.0, 9.8], [85.5, 11.2], [84.9, 12.6],
+          [84.4, 13.9], [84.2, 15.2], [84.5, 16.7], [84.9, 18.1],
+          [85.5, 19.3], [85.8, 19.8], [86.4, 20.6], [87.2, 21.8],
+          [88.3, 23.2], [89.5, 24.8]
+        ]
+      },
+      "properties": {
+        "SID": "2019117N03088",
+        "NAME": "FANI",
+        "SEASON": "2019",
+        "NUMBER": "01",
+        "BASIN": "NI",
+        "SUBBASIN": "BB",
+        "ISO_TIME": "2019-05-02 18:00:00",
+        "NATURE": "TS",
+        "WMO_WIND": 135,
+        "WMO_PRES": 932,
+        "USA_WIND": 150,
+        "USA_PRES": 915,
+        "TRACK_TYPE": "main",
+        "STATUS": "Extremely Severe Cyclonic Storm (Category 5 Equivalent)",
+        "LANDFALL": "Puri, Odisha (2019-05-03 03:00 UTC)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [88.5, 5.2] },
+      "properties": { "SID": "2019117N03088", "NAME": "FANI", "ISO_TIME": "2019-04-26 06:00:00", "WMO_WIND": 25, "WMO_PRES": 1006, "STAGE": "Depression" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [87.8, 6.2] },
+      "properties": { "SID": "2019117N03088", "NAME": "FANI", "ISO_TIME": "2019-04-27 12:00:00", "WMO_WIND": 35, "WMO_PRES": 1000, "STAGE": "Cyclonic Storm FANI Named" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [86.5, 8.4] },
+      "properties": { "SID": "2019117N03088", "NAME": "FANI", "ISO_TIME": "2019-04-29 00:00:00", "WMO_WIND": 50, "WMO_PRES": 992, "STAGE": "Severe Cyclonic Storm" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [85.5, 11.2] },
+      "properties": { "SID": "2019117N03088", "NAME": "FANI", "ISO_TIME": "2019-04-30 06:00:00", "WMO_WIND": 75, "WMO_PRES": 978, "STAGE": "Very Severe Cyclonic Storm" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [84.4, 13.9] },
+      "properties": { "SID": "2019117N03088", "NAME": "FANI", "ISO_TIME": "2019-05-01 12:00:00", "WMO_WIND": 100, "WMO_PRES": 956, "STAGE": "Extremely Severe Cyclonic Storm" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [84.5, 16.7] },
+      "properties": { "SID": "2019117N03088", "NAME": "FANI", "ISO_TIME": "2019-05-02 12:00:00", "WMO_WIND": 135, "WMO_PRES": 932, "STAGE": "Peak Intensity Off Visakhapatnam Coast (Cat 5)" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [85.8, 19.8] },
+      "properties": { "SID": "2019117N03088", "NAME": "FANI", "ISO_TIME": "2019-05-03 03:00:00", "WMO_WIND": 115, "WMO_PRES": 940, "STAGE": "Landfall Puri, Odisha Coast" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [88.3, 23.2] },
+      "properties": { "SID": "2019117N03088", "NAME": "FANI", "ISO_TIME": "2019-05-04 06:00:00", "WMO_WIND": 40, "WMO_PRES": 996, "STAGE": "Deep Depression Inland Dissipation" }
+    }
+  ]
+}

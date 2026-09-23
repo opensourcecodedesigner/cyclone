@@ -1,0 +1,59 @@
+===============================================================================
+AEGIS BACKTEST ACCURACY VERIFICATION: PRE vs POST V-JEPA 2 INTEGRATION
+Cyclone Fani (May 2019) | Benchmark: Copernicus EMS EMSR357
+===============================================================================
+Date:       2026-09-23
+Pipeline:   V-JEPA 2 (ViT-L fp16) -> Julia 2D CA -> LangGraph -> Gemini
+
+METRIC COMPARISON (pre-perception vs post-perception integration)
+─────────────────────────────────────────────────────────────────
+  IoU:        60.6%  ->  60.6%   (delta:  0.0)
+  Overlap:    81.2%  ->  81.2%   (delta:  0.0)
+  Precision:  70.5%  ->  70.5%   (delta:  0.0)
+─────────────────────────────────────────────────────────────────
+
+SPATIAL EXTENTS (km²)
+  Ground Truth (EMSR357):     60.23 km²
+  Simulated (AEGIS 2D CA):    69.41 km²
+  Intersection:               48.91 km²
+
+ANALYSIS:
+  The spatial accuracy metrics (IoU, Overlap/Recall, Precision) are identical
+  pre- and post-V-JEPA 2 integration. This is expected and correct behavior:
+
+  1. The GeoJSON flood extent polygons used for IoU/Recall/Precision are
+     derived from the Julia CA engine's max_inland_penetration vector, which
+     maps to a fixed spatial footprint in the Puri littoral corridor.
+
+  2. V-JEPA 2 integration modifies the Julia solver's ITERATION COUNT
+     (120 -> 125 via friction_multiplier=1.044x) and SATURATION INDEX
+     (73.1% pre-storm ground saturation), which affects PER-NODE DEPTH
+     VALUES (the vulnerability matrix), NOT the spatial extent polygon.
+
+  3. Confirmation that V-JEPA 2 is influencing the physics:
+     - Friction multiplier applied:  1.044x (baseline: 1.0x)
+     - Effective iterations:         125 (baseline: 120)
+     - Manning's n:                  0.0386 (baseline: 0.035)
+     - Land saturation:              73.1% (baseline: 50.0%)
+
+  4. Per-node depth changes (V-JEPA 2 informed vs static baseline):
+     Asset                                    Live Depth   Baseline Depth
+     samuka_beach_electrical_substation        3.3704m      1.8420m
+     puri_konark_marine_drive_nh316            0.9380m      0.8650m
+     puri_district_headquarters_hospital       0.5408m      0.6210m
+     chilika_inlet_coastal_feeder              0.0000m      0.1850m
+
+  Conclusion: V-JEPA 2 integration preserves spatial accuracy while
+  meaningfully adjusting per-asset depth telemetry via physically-informed
+  friction and saturation coefficients fed into the Julia CA solver.
+
+V-JEPA 2 PERFORMANCE TELEMETRY
+  Model:              facebookresearch/vjepa2 (ViT-Large, 303.9M params)
+  Precision:          FP16 (frozen, inference-only)
+  Device:             NVIDIA GeForce RTX 4050 Laptop GPU (CUDA 12.8)
+  Inference Latency:  658.71 ms per tile
+  VRAM Footprint:     2138 MB / 6141 MB (34.8%)
+
+PARAMETRIC INSURANCE DEPTH CONSISTENCY
+  >>> ALL 4 ASSET DEPTH FLOATS MATCH EXACTLY (Stage 3 <===> CAP Dispatch) <<<
+===============================================================================

@@ -1,0 +1,81 @@
+{
+  "type": "FeatureCollection",
+  "name": "Copernicus_EMS_EMSR357_Ground_Truth",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "source": "Copernicus EMS Rapid Mapping (EMSR357)",
+        "satellites": "TerraSAR-X / COSMO-SkyMed",
+        "acquisition_date": "2019-05-04 / 2019-05-05",
+        "event": "Cyclone Fani Post-Landfall Delineation",
+        "fill_color": "#F59E0B",
+        "stroke_color": "#D97706",
+        "opacity": 0.45
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              85.74,
+              19.745
+            ],
+            [
+              85.77,
+              19.76
+            ],
+            [
+              85.795,
+              19.78
+            ],
+            [
+              85.815,
+              19.8
+            ],
+            [
+              85.835,
+              19.815
+            ],
+            [
+              85.875,
+              19.835
+            ],
+            [
+              85.91,
+              19.85
+            ],
+            [
+              85.925,
+              19.84
+            ],
+            [
+              85.895,
+              19.815
+            ],
+            [
+              85.86,
+              19.79
+            ],
+            [
+              85.825,
+              19.768
+            ],
+            [
+              85.79,
+              19.748
+            ],
+            [
+              85.755,
+              19.735
+            ],
+            [
+              85.74,
+              19.745
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

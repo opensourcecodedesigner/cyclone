@@ -1,0 +1,88 @@
+{
+  "cyclone_event_name": "Super Cyclone VAYU-X (Bay of Bengal)",
+  "total_inundation_extent_meters": 1420.5,
+  "total_assets_at_risk": 5,
+  "strategic_situation_assessment": "Category 4 storm surge (3.8m peak crest) observed along Visakhapatnam East Coast. Hydrodynamic routing reveals extensive breach of primary beach barriers with rapid inland propagation penetrating up to 1.42 km. Severe hydraulic head pressure is concentrated on coastal health infrastructure and arterial logistics routes. Parametric insurance thresholds have been triggered across 4 primary assets.",
+  "automated_advisories": [
+    {
+      "advisory_id": "ADV-CYC-01",
+      "target_infrastructure": "Apex Coastal Referral Hospital",
+      "infrastructure_type": "hospital",
+      "evacuation_priority": "IMMEDIATE",
+      "hydraulic_threat_summary": "Simulated flood depth of 0.82m exceeds hospital failure threshold (0.50m). Ground-level ICUs and emergency generator vaults are in direct path of surge wave.",
+      "hardening_actions": [
+        "Initiate Code Black: Vertically evacuate all critical care patients to Level 3 and above.",
+        "Activate rooftop emergency auxiliary power backup; disconnect basement switchboards.",
+        "Deploy quick-inflate hydrostatic flood barriers along ambulance bays."
+      ],
+      "parametric_insurance_trigger": true,
+      "contingency_dispatch_message": "RED ALERT: Immediate tactical rescue boat dispatch required at Apex Coastal Hospital. Ground-floor evacuation underway."
+    },
+    {
+      "advisory_id": "ADV-CYC-02",
+      "target_infrastructure": "East Coast Primary 220kV Substation",
+      "infrastructure_type": "power_grid",
+      "evacuation_priority": "IMMEDIATE",
+      "hydraulic_threat_summary": "Water depth 1.15m breaches 1.00m dielectric flashover limit. Imminent risk of catastrophic busbar grounding and grid cascading trip.",
+      "hardening_actions": [
+        "Execute emergency remote de-energization of Bay 1 and Bay 2 transformers.",
+        "Reroute critical municipal power loads to the inland 400kV transmission corridor.",
+        "Seal control room cable trenches with rapid-setting polyurethane expanding foam."
+      ],
+      "parametric_insurance_trigger": true,
+      "contingency_dispatch_message": "CRITICAL: De-energize East Coast 220kV Substation immediately to prevent secondary explosions and urban electrocution."
+    },
+    {
+      "advisory_id": "ADV-CYC-03",
+      "target_infrastructure": "Coastal Trunk Highway Route 16 (Sector A)",
+      "infrastructure_type": "road",
+      "evacuation_priority": "IMMEDIATE",
+      "hydraulic_threat_summary": "Inundation depth 0.65m surpasses 0.30m vehicular swept-away limit. Road embankment scouring in progress.",
+      "hardening_actions": [
+        "Deploy Highway Patrol barriers at Checkpost 4 to divert all civilian traffic inland.",
+        "Mobilize State Disaster Response Force (SDRF) inflatable rescue vessels at junction 16B."
+      ],
+      "parametric_insurance_trigger": true,
+      "contingency_dispatch_message": "BLOCKADE: Route 16 Sector A impassable for all standard vehicles. Divert evacuation traffic to Highway 5."
+    },
+    {
+      "advisory_id": "ADV-CYC-04",
+      "target_infrastructure": "Harbor Gateway Thermal Switching Station",
+      "infrastructure_type": "power_grid",
+      "evacuation_priority": "HIGH",
+      "hydraulic_threat_summary": "Water depth 0.74m nearing critical 1.0m limit. Water approaching turbine cooling intake vaults.",
+      "hardening_actions": [
+        "Erect sandbag perimeter walls and activate high-capacity diesel submersible dewatering pumps.",
+        "Prepare cold-shutdown protocol if surge increases by additional 0.25m."
+      ],
+      "parametric_insurance_trigger": false,
+      "contingency_dispatch_message": "HIGH WATCH: Place Harbor Gateway Thermal Station on 15-minute telemetry watch. Station emergency dewatering teams."
+    },
+    {
+      "advisory_id": "ADV-CYC-05",
+      "target_infrastructure": "Port Authority General Clinic",
+      "infrastructure_type": "hospital",
+      "evacuation_priority": "HIGH",
+      "hydraulic_threat_summary": "Water depth 0.38m approaching 0.50m critical threshold. Perimeter access road submerged.",
+      "hardening_actions": [
+        "Relocate emergency medicine and pharmaceutical stockpiles to upper level storage.",
+        "Transfer non-ambulatory patients to inland regional healthcare facilities."
+      ],
+      "parametric_insurance_trigger": false,
+      "contingency_dispatch_message": "AMBULATORY EVAC: Pre-emptively transfer Port Clinic ambulatory patients before surge crests."
+    },
+    {
+      "advisory_id": "ADV-CYC-06",
+      "target_infrastructure": "Inland Evacuation Arterial Highway 5",
+      "infrastructure_type": "road",
+      "evacuation_priority": "STANDBY",
+      "hydraulic_threat_summary": "Water depth 0.04m (well below 0.30m threshold). Highway corridor remains dry and operational for relief transit.",
+      "hardening_actions": [
+        "Maintain clear-lane protocol for emergency convoys and military transport.",
+        "Position tow trucks and heavy recovery cranes at critical overpasses."
+      ],
+      "parametric_insurance_trigger": false,
+      "contingency_dispatch_message": "GREEN CORRIDOR: Highway 5 confirmed primary evacuation artery. Maintain 24/7 drone surveillance."
+    }
+  ]
+}

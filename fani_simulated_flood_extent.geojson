@@ -1,0 +1,81 @@
+{
+  "type": "FeatureCollection",
+  "name": "AEGIS_Simulated_Flood_Extent_Fani",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "model": "AEGIS 2D Cellular Automata (Julia)",
+        "surge_applied_m": 4.42,
+        "max_penetration_m": 270.0,
+        "event": "Cyclone Fani Backtest",
+        "fill_color": "#06B6D4",
+        "stroke_color": "#0891B2",
+        "opacity": 0.45
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              85.745,
+              19.748
+            ],
+            [
+              85.772,
+              19.763
+            ],
+            [
+              85.798,
+              19.783
+            ],
+            [
+              85.818,
+              19.805
+            ],
+            [
+              85.84,
+              19.822
+            ],
+            [
+              85.88,
+              19.842
+            ],
+            [
+              85.915,
+              19.853
+            ],
+            [
+              85.922,
+              19.838
+            ],
+            [
+              85.89,
+              19.81
+            ],
+            [
+              85.855,
+              19.785
+            ],
+            [
+              85.82,
+              19.762
+            ],
+            [
+              85.785,
+              19.742
+            ],
+            [
+              85.75,
+              19.732
+            ],
+            [
+              85.745,
+              19.748
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

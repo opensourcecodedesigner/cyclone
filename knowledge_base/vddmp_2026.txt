@@ -1,0 +1,5 @@
+VISAKHAPATNAM DISTRICT DISASTER MANAGEMENT PROTOCOL (VDDMP-2026)
+Asset: power_substation_alpha
+Action: If depth > 1.0m, MANDATORY grid de-energization. Dispatch crew to sever trunk line.
+Asset: district_hospital_central
+Action: If depth > 0.3m, relocate ICU patients to Floor 3. Prime Floor 2 diesel generators.
