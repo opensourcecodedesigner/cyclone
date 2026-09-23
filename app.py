@@ -739,11 +739,11 @@ with tab_validation:
 
     # Load Backtest Metrics
     val_metrics = {
-        "ground_truth_inundation_km2": 44.82,
-        "simulated_inundation_km2": 48.65,
-        "intersection_over_union_iou_pct": 72.4,
+        "ground_truth_inundation_km2": 60.23,
+        "simulated_inundation_km2": 69.41,
+        "intersection_over_union_iou_pct": 60.6,
         "overlap_recall_pct": 81.2,
-        "precision_pct": 74.8
+        "precision_pct": 70.5
     }
     if os.path.exists("backtest_metrics.json"):
         try:
@@ -863,13 +863,15 @@ with tab_validation:
         st.markdown('<div class="noir-card-header"><span>🔬 Scientific Critique & Physical Variance Analysis</span></div>', unsafe_allow_html=True)
 
         # Honest Scientific Critique Callout
-        st.markdown("""
+        iou_display = val_metrics.get("intersection_over_union_iou_pct", 60.6)
+        recall_display = val_metrics.get("overlap_recall_pct", 81.2)
+        st.markdown(f"""
         <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); border-left: 4px solid #F59E0B; border-radius: 6px; padding: 12px 16px; margin-bottom: 12px;">
             <div style="font-weight: 800; color: #FBBF24; font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;">
-                ⚠️ ACCURACY & LIMITATION DISCLOSURE (72.4% IoU vs. Satellite Radar)
+                ⚠️ ACCURACY & LIMITATION DISCLOSURE ({iou_display:.1f}% IoU vs. Satellite Radar)
             </div>
             <div style="font-size: 0.80rem; color: #C9D1D9; line-height: 1.55;">
-                The AEGIS 2D Cellular Automata engine achieves an <strong>81.2% overlap recall</strong> and <strong>72.4% Intersection over Union (IoU)</strong> against Copernicus EMSR357 satellite radar. The observed variance is expected and primarily attributable to:
+                The AEGIS 2D Cellular Automata engine achieves an <strong>{recall_display:.1f}% overlap recall</strong> and <strong>{iou_display:.1f}% Intersection over Union (IoU)</strong> against Copernicus EMSR357 satellite radar. The observed variance is expected and primarily attributable to:
                 <ul style="margin: 6px 0 0 14px; padding: 0;">
                     <li><strong>Diffusive vs. Navier-Stokes Scheme:</strong> Simplified 2D CA diffusive wave routing captures gravity head equilibrium, but omits dynamic momentum advection and coastal breaker zone wave setup.</li>
                     <li><strong>Tidal Prism Coupling:</strong> Does not simulate astronomical spring-tide amplification in the adjacent Chilika lagoon estuary.</li>

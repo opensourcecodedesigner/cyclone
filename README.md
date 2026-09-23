@@ -115,8 +115,10 @@ flowchart TD
 ## Core Subsystems Deep Dive
 
 ### 1. Perception Stage: Meta V-JEPA 2 (PyTorch)
-* **Stack:** PyTorch 2.6+, CUDA 12.8, `facebookresearch/vjepa2` checkpoint.
-* **Model:** Vision Joint Embedding Predictive Architecture Large (`ViT-L`, 303.9M parameters, frozen, FP16).
+* **File:** `perception_stage.py`
+* **Stack:** PyTorch 2.6+, CUDA 12.8, `facebookresearch/vjepa2` PyTorch Hub.
+* **Context Encoder:** Vision Joint Embedding Predictive Architecture Large (`vjepa2_vit_large` / `ViT-L`, 303.9M parameters, frozen `requires_grad=False`, FP16 precision).
+* **Pretraining Architecture:** Uses an Exponential Moving Average (EMA) target encoder to guide latent predictive representations of spatio-temporal blocks without pixel-level reconstruction or information maximization loss.
 * **Execution Latency:** $\sim 658 \text{ ms}$ per satellite tile on an NVIDIA RTX GPU; VRAM footprint $\sim 2.1 \text{ GB}$.
 * **Physical Parameter Derivation:**
   Instead of feeding black-box pixel values into the hydrodynamic simulation, V-JEPA 2 acts as a self-supervised physical feature encoder:
@@ -298,8 +300,8 @@ d:\julia engine\
 
 ```powershell
 # Clone the repository
-git clone https://github.com/your-org/aegis-disaster-pipeline.git
-cd "aegis-disaster-pipeline"
+git clone https://github.com/opensourcecodedesigner/cyclone.git
+cd "cyclone"
 
 # Create and activate virtual environment
 python -m venv .venv
@@ -357,15 +359,24 @@ curl http://localhost:8080/health
 
 ### Step 4: Launch the Cartographic Noir Tactical Console
 
-In a separate terminal (with `.venv` active):
+Before launching, ensure only a single instance of Streamlit runs to prevent duplicate API calls or port contention:
 
 ```powershell
+# Verify no duplicate background instances are running
+Get-Process python, streamlit -ErrorAction SilentlyContinue | Select-Object Id, ProcessName
+
+# Launch the console (in a terminal with .venv active)
 streamlit run app.py
 ```
 
 Open `http://localhost:8501` in your browser:
-* **🚨 LIVE INCIDENT OPERATIONS**: Adjust surge and wind sliders or click **Fani Cat 4 (4.2m)** / **Cat 3 (3.2m)** presets, then click **🚀 EXECUTE LIVE SIMULATION**.
-* **📊 MODEL VALIDATION**: Inspect the empirical Copernicus radar ground truth overlay and spatial metrics.
+* **🚨 LIVE INCIDENT OPERATIONS**:
+  * Adjust surge and wind sliders or click **Fani Cat 4 (4.2m)** / **Cat 3 (3.2m)** presets.
+  * *API Quota Protection*: Moving sliders or switching tabs updates `st.session_state` locally without triggering LLM calls or Julia physics.
+  * Click **🚀 EXECUTE LIVE SIMULATION** to trigger the Julia hydrodynamic simulation, parametric trigger evaluation, and resilient Gemini dispatch.
+* **📊 MODEL VALIDATION**:
+  * Inspect the empirical Copernicus radar ground truth overlay (EMSR357) against the 2D Cellular Automata simulation.
+  * Dynamically bound to `backtest_metrics.json` displaying verified benchmark figures (**60.6% IoU**, **81.2% Overlap Recall**).
 
 ---
 

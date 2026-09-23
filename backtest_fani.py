@@ -311,7 +311,7 @@ def generate_fani_geojson_layers(max_inland_m: float) -> Tuple[str, str, dict]:
         "overlap_recall_pct": overlap_recall,
         "precision_pct": precision,
         "scientific_critique": (
-            "Simplified 2D Cellular Automata diffusive scheme models gravity head equilibrium with high fidelity (72.4% IoU), "
+            f"Simplified 2D Cellular Automata diffusive scheme models gravity head equilibrium with high fidelity ({iou}% IoU), "
             "but under-resolves tidal prism dynamics and micro-topographic sand dunes captured by radar satellite sensors."
         )
     }
