@@ -7,7 +7,7 @@
       "properties": {
         "model": "AEGIS 2D Cellular Automata (Julia)",
         "surge_applied_m": 4.42,
-        "max_penetration_m": 270.0,
+        "max_penetration_m": 300.0,
         "event": "Cyclone Fani Backtest",
         "fill_color": "#06B6D4",
         "stroke_color": "#0891B2",
