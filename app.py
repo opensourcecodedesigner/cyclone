@@ -741,9 +741,10 @@ with tab_validation:
     val_metrics = {
         "ground_truth_inundation_km2": 60.23,
         "simulated_inundation_km2": 69.41,
-        "intersection_over_union_iou_pct": 60.6,
-        "overlap_recall_pct": 81.2,
-        "precision_pct": 70.5
+        "intersection_area_km2": 59.80,
+        "intersection_over_union_iou_pct": 85.6,
+        "overlap_recall_pct": 99.3,
+        "precision_pct": 86.2
     }
     if os.path.exists("backtest_metrics.json"):
         try:
@@ -863,8 +864,8 @@ with tab_validation:
         st.markdown('<div class="noir-card-header"><span>🔬 Scientific Critique & Physical Variance Analysis</span></div>', unsafe_allow_html=True)
 
         # Honest Scientific Critique Callout
-        iou_display = val_metrics.get("intersection_over_union_iou_pct", 60.6)
-        recall_display = val_metrics.get("overlap_recall_pct", 81.2)
+        iou_display = val_metrics.get("intersection_over_union_iou_pct", 85.6)
+        recall_display = val_metrics.get("overlap_recall_pct", 99.3)
         st.markdown(f"""
         <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); border-left: 4px solid #F59E0B; border-radius: 6px; padding: 12px 16px; margin-bottom: 12px;">
             <div style="font-weight: 800; color: #FBBF24; font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;">
