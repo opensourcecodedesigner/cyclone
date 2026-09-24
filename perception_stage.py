@@ -33,6 +33,9 @@ if sys.platform == "win32":
     except Exception:
         pass
 
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning, module="timm")
+
 import torch
 
 # =============================================================================

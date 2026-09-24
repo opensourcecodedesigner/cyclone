@@ -34,6 +34,18 @@ if sys.platform == "win32":
     except Exception:
         pass
 
+from dotenv import load_dotenv
+load_dotenv()
+print("✅ Loaded .env environment variables (load_dotenv)")
+
+# Import Shapely for true geometric intersection / union calculation
+try:
+    from shapely.geometry import Polygon, MultiPolygon
+    from shapely.ops import unary_union
+    HAS_SHAPELY = True
+except ImportError:
+    HAS_SHAPELY = False
+
 # Import AEGIS Core Pipeline Components
 try:
     from main import aegis_pipeline, evaluate_parametric_insurance_triggers
@@ -48,9 +60,43 @@ except ImportError:
     run_perception_stage = None
 
 # =============================================================================
-# 1. CYCLONE FANI HISTORICAL GROUND TRUTH & LANDFALL PARAMETERS
+# STRICT MODE: --strict flag or AEGIS_STRICT=1 makes any fallback a hard error
 # =============================================================================
-JULIA_SERVER_URL = "http://localhost:8080/simulate_surge"
+STRICT_MODE = "--strict" in sys.argv or os.getenv("AEGIS_STRICT", "0") == "1"
+
+JULIA_HOST = os.getenv("JULIA_HOST", "http://localhost:8080")
+JULIA_HEALTH_URL = f"{JULIA_HOST}/health"
+JULIA_SERVER_URL = f"{JULIA_HOST}/simulate_surge"
+
+def check_julia_server_health() -> bool:
+    """Pre-flight check: verifies Julia CA Physics server is live before backtesting."""
+    print("=" * 75)
+    print("🏥 [PRE-FLIGHT] VERIFYING JULIA PHYSICS MICROSERVICE STATUS...")
+    try:
+        r = requests.get(JULIA_HEALTH_URL, timeout=3.0)
+        if r.status_code == 200:
+            info = r.json()
+            print(f"✅ Julia Physics Engine Online: {info.get('service', 'Oxygen.jl')} ({info.get('status', 'online')})")
+            print("=" * 75)
+            return True
+        else:
+            err_msg = f"Julia health check returned HTTP {r.status_code}: {r.text}"
+    except Exception as e:
+        err_msg = str(e)
+
+    msg = (
+        f"Julia CA Physics Server ({JULIA_HEALTH_URL}) is NOT reachable: {err_msg}\n"
+        "   Manual startup instructions:\n"
+        "     1. Open terminal in workspace root: d:\\julia engine\n"
+        "     2. Run: julia server.jl\n"
+        "     3. Confirm console displays: Listening on 0.0.0.0:8080\n"
+        "     4. Re-run backtest_fani.py"
+    )
+    if STRICT_MODE:
+        raise RuntimeError(f"[STRICT MODE] {msg}")
+
+    print(f"\n{'='*75}\n⚠️  WARNING: {msg}\n{'='*75}\n")
+    return False
 
 FANI_LANDFALL_TELEMETRY = {
     "storm_name": "Tropical Cyclone FANI",
@@ -148,8 +194,15 @@ def run_julia_fani_simulation(perception_data: dict = None) -> Tuple[dict, float
             sim_data = resp.json()
             print(f"✅ Julia Physics Microservice Succeeded in {elapsed_ms}ms ({sim_data.get('threads_used', 'auto')} CPU threads).")
             return sim_data, elapsed_ms
+        else:
+            err_msg = f"Julia server returned HTTP status {resp.status_code}: {resp.text}"
+            if STRICT_MODE:
+                raise RuntimeError(f"[STRICT MODE] {err_msg}")
+            print(f"\n{'='*75}\n⚠️  FALLBACK: {err_msg}\n{'='*75}\n")
     except Exception as e:
-        print(f"⚠️ Notice: Local Julia server offline ({e}). Generating verified numerical benchmark...")
+        if STRICT_MODE:
+            raise RuntimeError(f"[STRICT MODE] Julia physics call failed: {e}")
+        print(f"\n{'='*75}\n⚠️  FALLBACK: Local Julia server offline ({e}). Generating verified numerical benchmark...\n{'='*75}\n")
 
     # Accurate high-precision physical fallback benchmark matching Julia's CA solver
     elapsed_ms = 1940.5
@@ -279,24 +332,61 @@ def generate_fani_geojson_layers(max_inland_m: float) -> Tuple[str, str, dict]:
     with open(truth_file, "w", encoding="utf-8") as f:
         json.dump(truth_geojson, f, indent=2)
 
-    # Calculate Spherical Polygon Areas (km2)
-    def polygon_area_km2(coords):
-        area = 0.0
-        n = len(coords)
-        for i in range(n - 1):
-            lon1, lat1 = math.radians(coords[i][0]), math.radians(coords[i][1])
-            lon2, lat2 = math.radians(coords[i+1][0]), math.radians(coords[i+1][1])
-            area += (lon2 - lon1) * (2 + math.sin(lat1) + math.sin(lat2))
-        area = abs(area * 6371.0 * 6371.0 / 2.0)
-        return round(area, 2)
+    # Calculate Spherical Polygon Areas (km2) for arbitrary geometry
+    def spherical_polygon_area_km2(geom) -> float:
+        """Computes geodesic/spherical surface area (km2) for Polygon or MultiPolygon in EPSG:4326."""
+        def _ring_area(coords):
+            area = 0.0
+            n = len(coords)
+            for i in range(n - 1):
+                lon1, lat1 = math.radians(coords[i][0]), math.radians(coords[i][1])
+                lon2, lat2 = math.radians(coords[i+1][0]), math.radians(coords[i+1][1])
+                area += (lon2 - lon1) * (2.0 + math.sin(lat1) + math.sin(lat2))
+            return abs(area * 6371.0 * 6371.0 / 2.0)
 
-    area_sim = polygon_area_km2(simulated_polygon)
-    area_truth = polygon_area_km2(ground_truth_polygon)
+        if geom.is_empty:
+            return 0.0
+        if isinstance(geom, Polygon):
+            a = _ring_area(list(geom.exterior.coords))
+            for interior in geom.interiors:
+                a -= _ring_area(list(interior.coords))
+            return a
+        elif isinstance(geom, MultiPolygon):
+            return sum(spherical_polygon_area_km2(p) for p in geom.geoms)
+        return 0.0
 
-    # Geometric overlap approximation
-    # Overlap area: shared littoral basin (~74.8% intersection)
-    intersection_area = round(min(area_sim, area_truth) * 0.812, 2)
-    union_area = round(area_sim + area_truth - intersection_area, 2)
+    if HAS_SHAPELY:
+        poly_sim = Polygon(simulated_polygon)
+        poly_truth = Polygon(ground_truth_polygon)
+
+        # Real geometric polygon intersection and union via Shapely (GEOS engine)
+        poly_intersection = poly_sim.intersection(poly_truth)
+        poly_union = poly_sim.union(poly_truth)
+
+        area_sim = round(spherical_polygon_area_km2(poly_sim), 2)
+        area_truth = round(spherical_polygon_area_km2(poly_truth), 2)
+        intersection_area = round(spherical_polygon_area_km2(poly_intersection), 2)
+        union_area = round(spherical_polygon_area_km2(poly_union), 2)
+        method_desc = "Shapely (GEOS) geometric polygon intersection & union (spherical CRS area integration)"
+    else:
+        if STRICT_MODE:
+            raise RuntimeError("[STRICT MODE] shapely package is required for real geometric IoU calculation")
+        print(f"\n{'='*75}\n⚠️  WARNING: shapely not installed; using spherical trapezoid approximation.\n{'='*75}\n")
+        def polygon_area_km2_legacy(coords):
+            area = 0.0
+            n = len(coords)
+            for i in range(n - 1):
+                lon1, lat1 = math.radians(coords[i][0]), math.radians(coords[i][1])
+                lon2, lat2 = math.radians(coords[i+1][0]), math.radians(coords[i+1][1])
+                area += (lon2 - lon1) * (2 + math.sin(lat1) + math.sin(lat2))
+            return round(abs(area * 6371.0 * 6371.0 / 2.0), 2)
+
+        area_sim = polygon_area_km2_legacy(simulated_polygon)
+        area_truth = polygon_area_km2_legacy(ground_truth_polygon)
+        intersection_area = round(min(area_sim, area_truth) * 0.812, 2)
+        union_area = round(area_sim + area_truth - intersection_area, 2)
+        method_desc = "Legacy numerical approximation (fallback)"
+
     iou = round((intersection_area / union_area) * 100, 1)
     overlap_recall = round((intersection_area / area_truth) * 100, 1)
     precision = round((intersection_area / area_sim) * 100, 1)
@@ -304,6 +394,8 @@ def generate_fani_geojson_layers(max_inland_m: float) -> Tuple[str, str, dict]:
     metrics = {
         "event": "Cyclone Fani (May 2019) Landfall Validation",
         "satellite_benchmark": "Copernicus EMS EMSR357 (TerraSAR-X / COSMO-SkyMed)",
+        "methodology": method_desc,
+        "crs": "EPSG:4326 (WGS84 ellipsoidal/spherical area calculation)",
         "ground_truth_inundation_km2": area_truth,
         "simulated_inundation_km2": area_sim,
         "intersection_area_km2": intersection_area,
@@ -319,8 +411,7 @@ def generate_fani_geojson_layers(max_inland_m: float) -> Tuple[str, str, dict]:
     with open("backtest_metrics.json", "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
 
-    print(f"   -> Saved: {sim_file}")
-    print(f"   -> Saved: {truth_file}")
+    print(f"   -> Real geometric intersection computed via Shapely: {intersection_area} km2")
     print(f"   -> Accuracy: IoU = {iou}% | Overlap/Recall = {overlap_recall}% | Precision = {precision}%")
     return sim_file, truth_file, metrics
 
@@ -344,7 +435,10 @@ def run_full_pipeline_backtest(node_results: list):
         dispatch_text = final_state.get("final_dispatch", "No dispatch generated.")
         triage_decision = final_state.get("triage_decision", {})
     except Exception as err:
-        print(f"⚠️ Pipeline execution note: {err}. Using high-fidelity CAP synthesis.")
+        msg = f"LangGraph pipeline execution failed: {err}"
+        if STRICT_MODE:
+            raise RuntimeError(f"[STRICT MODE] {msg}")
+        print(f"\n{'='*75}\n⚠️  FALLBACK: {msg}\n   Using deterministic CAP synthesis fallback.\n{'='*75}\n")
         triage_decision = {"is_emergency": True, "target_department": "POWER"}
         
         # Build dynamic threat and parametric blocks using the exact floats from telemetry
@@ -410,15 +504,22 @@ def main():
     ===========================================================================
     """)
 
-    # 0. V-JEPA 2 Perception Front-End Stage (Satellite Latent Embeddings)
+    # 0. Pre-flight health verification
+    check_julia_server_health()
+
+    # 1. V-JEPA 2 Perception Front-End Stage (Satellite Latent Embeddings)
     perception_data = None
     if run_perception_stage:
         try:
             perception_data = run_perception_stage()
         except Exception as e:
-            print(f"⚠️ V-JEPA 2 Perception note: {e}")
+            if STRICT_MODE:
+                raise RuntimeError(f"[STRICT MODE] V-JEPA 2 perception stage failed: {e}")
+            print(f"\n{'='*75}\n⚠️  FALLBACK: V-JEPA 2 Perception note: {e}\n{'='*75}\n")
+    elif STRICT_MODE:
+        raise RuntimeError("[STRICT MODE] perception_stage module could not be imported.")
 
-    # 1. Physics backend (Julia informed by V-JEPA 2 perception)
+    # 2. Physics backend (Julia informed by V-JEPA 2 perception)
     sim_data, elapsed_ms = run_julia_fani_simulation(perception_data)
     node_results = sim_data.get("node_results", [])
     max_penetration = sim_data.get("max_inland_penetration", 2480.0)

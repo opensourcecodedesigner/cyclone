@@ -16,6 +16,7 @@ State Machine Architecture:
 import os
 import sys
 import json
+import time
 from typing_extensions import TypedDict
 
 if sys.platform == "win32":
@@ -26,10 +27,50 @@ if sys.platform == "win32":
             sys.stderr.reconfigure(encoding="utf-8")
     except Exception:
         pass
+
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning, module="timm")
+
+from dotenv import load_dotenv
+load_dotenv()
+print("✅ Loaded .env environment variables (load_dotenv)")
+
 from google import genai
 from google.genai import types
 from langgraph.graph import StateGraph, END
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
+
+# Configure LlamaIndex to use local HuggingFace embeddings (no OpenAI key required)
+try:
+    from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+    Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+except ImportError:
+    warnings.warn("llama-index-embeddings-huggingface not installed. RAG will use default embeddings.")
+
+# =============================================================================
+# STRICT MODE: --strict flag or AEGIS_STRICT=1 makes any fallback a hard error
+# =============================================================================
+STRICT_MODE = "--strict" in sys.argv or os.getenv("AEGIS_STRICT", "0") == "1"
+
+def _validate_gemini_key():
+    """Validate Gemini API key on startup. Fails loudly in strict mode."""
+    key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not key:
+        msg = "GEMINI_API_KEY not found in environment. Triage and dispatch will use local fallbacks."
+        if STRICT_MODE:
+            raise RuntimeError(f"[STRICT MODE] {msg}")
+        print(f"\n{'='*75}\n⚠️  WARNING: {msg}\n{'='*75}\n")
+        return None
+    # Format advisory
+    if key.startswith("AIzaSy"):
+        print(f"✅ Gemini API key loaded (Google AI Studio format, {len(key)} chars)")
+    else:
+        print(f"⚠️  Gemini API key loaded but has non-standard format (prefix: {key[:4]}..., {len(key)} chars).")
+        print(f"   Standard Google AI Studio keys start with 'AIzaSy'.")
+        print(f"   If this is a Vertex AI service-account key, use genai.Client(vertexai=True) instead.")
+    return key
+
+_validated_gemini_key = _validate_gemini_key()
 
 # =============================================================================
 # 1. PARAMETRIC INSURANCE TRIGGER EVALUATION
@@ -82,15 +123,18 @@ class GraphState(TypedDict, total=False):
     final_dispatch: str
 
 # =============================================================================
-# 3. NODE 1: SYSTEM 1 TRIAGE ROUTER (GEMINI 2.5 FLASH / JEV PROXY)
+# 3. NODE 1: SYSTEM 1 TRIAGE ROUTER (GEMINI FLASH / LANGGRAPH STATE MACHINE)
 # =============================================================================
 def system1_triage_node(state: GraphState):
-    print("\n⚡ [NODE] Running System 1 Triage (Jev Proxy)...")
+    print("\n⚡ [NODE] Running System 1 Triage (LangGraph State Machine)...")
     node_results = state.get("node_results", [])
-    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    api_key = _validated_gemini_key
     
     if not api_key:
-        # Deterministic bare-metal proxy for Jev edge model
+        msg = "No Gemini API key — using deterministic Jev Proxy triage instead of Gemini API."
+        if STRICT_MODE:
+            raise RuntimeError(f"[STRICT MODE] {msg}")
+        print(f"\n{'='*75}\n⚠️  FALLBACK: {msg}\n{'='*75}")
         is_emer = any(n.get("status") in ("Critical", "At Risk") for n in node_results)
         dept = "POWER" if any(n.get("type") in ("power_grid", "power") and n.get("status") in ("Critical", "At Risk") for n in node_results) else ("MEDICAL" if is_emer else "NONE")
         decision = {"is_emergency": is_emer, "target_department": dept}
@@ -104,14 +148,33 @@ def system1_triage_node(state: GraphState):
     Otherwise, return {"is_emergency": false, "target_department": "NONE"}.
     Target department must be one of: "POWER", "MEDICAL", "TRANSPORT", or "NONE".
     """
-    try:
-        response = client.models.generate_content(
-            model='gemini-3.6-flash',
-            contents=f"{prompt}\n\nDATA:\n{json.dumps(node_results)}",
-            config=types.GenerateContentConfig(response_mime_type="application/json")
-        )
-        decision = json.loads(response.text)
-    except Exception as err:
+    response = None
+    last_err = None
+    candidate_models = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.6-flash']
+    for candidate_model in candidate_models:
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(
+                    model=candidate_model,
+                    contents=f"{prompt}\n\nDATA:\n{json.dumps(node_results)}",
+                    config=types.GenerateContentConfig(response_mime_type="application/json")
+                )
+                decision = json.loads(response.text)
+                last_err = None
+                print(f"   -> System 1 Triage evaluated by {candidate_model}")
+                break
+            except Exception as err:
+                last_err = err
+                time.sleep(1.0)
+                continue
+        if last_err is None:
+            break
+
+    if last_err is not None:
+        msg = f"Gemini triage API call failed: {last_err}"
+        if STRICT_MODE:
+            raise RuntimeError(f"[STRICT MODE] {msg}")
+        print(f"\n{'='*75}\n⚠️  FALLBACK: {msg}\n   Using deterministic Jev Proxy triage.\n{'='*75}")
         is_emer = any(n.get("status") in ("Critical", "At Risk") for n in node_results)
         decision = {"is_emergency": is_emer, "target_department": "POWER" if is_emer else "NONE"}
     print(f"   -> Decision: {decision}")
@@ -149,7 +212,10 @@ def retrieve_sop_node(state: GraphState):
         docs = retriever.retrieve(query_str)
         rag_text = "\n\n".join([d.text for d in docs]) if docs else ""
     except Exception as e:
-        print(f"   [INFO] Vector index note ({e}). Reading local Visakhapatnam SOPs directly...")
+        msg = f"LlamaIndex vector index failed: {e}"
+        if STRICT_MODE:
+            raise RuntimeError(f"[STRICT MODE] {msg}")
+        print(f"\n{'='*75}\n⚠️  FALLBACK: {msg}\n   Reading SOPs via direct file match instead of vector similarity.\n{'='*75}")
         # Direct retrieval fallback from local SOP documents
         sop_files = [os.path.join("knowledge_base", f) for f in os.listdir("knowledge_base") if f.endswith(('.md', '.txt'))]
         matched_sections = []
@@ -187,9 +253,12 @@ def system2_dispatch_node(state: GraphState):
         for n in node_results
     ])
 
-    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    api_key = _validated_gemini_key
     if not api_key:
-        print("   [INFO] Local execution mode (Deterministic CAP Synthesis)...")
+        msg = "No Gemini API key — using deterministic CAP template instead of Gemini synthesis."
+        if STRICT_MODE:
+            raise RuntimeError(f"[STRICT MODE] {msg}")
+        print(f"\n{'='*75}\n⚠️  FALLBACK: {msg}\n{'='*75}")
         final_dispatch = (
             "=== AEGIS COMMON ALERTING PROTOCOL (CAP) TACTICAL DISPATCH ADVISORY ===\n"
             "INCIDENT: CYCLONIC SURGE INUNDATION & INFRASTRUCTURE FAILURE\n"
@@ -210,17 +279,35 @@ def system2_dispatch_node(state: GraphState):
     CRITICAL INSTRUCTION: Include the EXACT verbatim [PARAMETRIC INSURANCE TRIGGER STATUS] block below without modifying or rounding any depth numbers:
     {parametric_block}
     """
-    try:
-        response = client.models.generate_content(
-            model='gemini-3.6-flash',
-            contents=prompt
-        )
-        final_dispatch = response.text
-        # Enforce exact block if altered by LLM
-        if "[PARAMETRIC INSURANCE TRIGGER STATUS]" not in final_dispatch:
-            final_dispatch += f"\n\n{parametric_block}"
-    except Exception as err:
-        print(f"   [INFO] API fallback ({err}). Generating deterministic CAP order...")
+    response = None
+    last_err = None
+    candidate_models = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.6-flash']
+    for candidate_model in candidate_models:
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(
+                    model=candidate_model,
+                    contents=prompt
+                )
+                final_dispatch = response.text
+                # Enforce exact block if altered by LLM
+                if "[PARAMETRIC INSURANCE TRIGGER STATUS]" not in final_dispatch:
+                    final_dispatch += f"\n\n{parametric_block}"
+                last_err = None
+                print(f"   -> System 2 Dispatch generated by {candidate_model}")
+                break
+            except Exception as err:
+                last_err = err
+                time.sleep(1.0)
+                continue
+        if last_err is None:
+            break
+
+    if last_err is not None:
+        msg = f"Gemini dispatch API call failed: {last_err}"
+        if STRICT_MODE:
+            raise RuntimeError(f"[STRICT MODE] {msg}")
+        print(f"\n{'='*75}\n⚠️  FALLBACK: {msg}\n   Generating deterministic CAP order.\n{'='*75}")
         final_dispatch = (
             "=== AEGIS COMMON ALERTING PROTOCOL (CAP) TACTICAL DISPATCH ADVISORY ===\n"
             "INCIDENT: CYCLONIC SURGE INUNDATION & INFRASTRUCTURE FAILURE\n"
