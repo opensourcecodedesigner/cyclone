@@ -355,37 +355,24 @@ def generate_fani_geojson_layers(max_inland_m: float) -> Tuple[str, str, dict]:
             return sum(spherical_polygon_area_km2(p) for p in geom.geoms)
         return 0.0
 
-    if HAS_SHAPELY:
-        poly_sim = Polygon(simulated_polygon)
-        poly_truth = Polygon(ground_truth_polygon)
+    if not HAS_SHAPELY:
+        raise RuntimeError(
+            "Shapely (GEOS) is strictly required for real geometric intersection and IoU calculation. "
+            "Install with: pip install shapely. Heuristic and approximated accuracy shortcuts are strictly prohibited."
+        )
 
-        # Real geometric polygon intersection and union via Shapely (GEOS engine)
-        poly_intersection = poly_sim.intersection(poly_truth)
-        poly_union = poly_sim.union(poly_truth)
+    poly_sim = Polygon(simulated_polygon)
+    poly_truth = Polygon(ground_truth_polygon)
 
-        area_sim = round(spherical_polygon_area_km2(poly_sim), 2)
-        area_truth = round(spherical_polygon_area_km2(poly_truth), 2)
-        intersection_area = round(spherical_polygon_area_km2(poly_intersection), 2)
-        union_area = round(spherical_polygon_area_km2(poly_union), 2)
-        method_desc = "Shapely (GEOS) geometric polygon intersection & union (spherical CRS area integration)"
-    else:
-        if STRICT_MODE:
-            raise RuntimeError("[STRICT MODE] shapely package is required for real geometric IoU calculation")
-        print(f"\n{'='*75}\n⚠️  WARNING: shapely not installed; using spherical trapezoid approximation.\n{'='*75}\n")
-        def polygon_area_km2_legacy(coords):
-            area = 0.0
-            n = len(coords)
-            for i in range(n - 1):
-                lon1, lat1 = math.radians(coords[i][0]), math.radians(coords[i][1])
-                lon2, lat2 = math.radians(coords[i+1][0]), math.radians(coords[i+1][1])
-                area += (lon2 - lon1) * (2 + math.sin(lat1) + math.sin(lat2))
-            return round(abs(area * 6371.0 * 6371.0 / 2.0), 2)
+    # Real geometric polygon intersection and union via Shapely (GEOS engine)
+    poly_intersection = poly_sim.intersection(poly_truth)
+    poly_union = poly_sim.union(poly_truth)
 
-        area_sim = polygon_area_km2_legacy(simulated_polygon)
-        area_truth = polygon_area_km2_legacy(ground_truth_polygon)
-        intersection_area = round(min(area_sim, area_truth) * 0.812, 2)
-        union_area = round(area_sim + area_truth - intersection_area, 2)
-        method_desc = "Legacy numerical approximation (fallback)"
+    area_sim = round(spherical_polygon_area_km2(poly_sim), 2)
+    area_truth = round(spherical_polygon_area_km2(poly_truth), 2)
+    intersection_area = round(spherical_polygon_area_km2(poly_intersection), 2)
+    union_area = round(spherical_polygon_area_km2(poly_union), 2)
+    method_desc = "Shapely (GEOS) geometric polygon intersection & union (spherical CRS area integration)"
 
     iou = round((intersection_area / union_area) * 100, 1)
     overlap_recall = round((intersection_area / area_truth) * 100, 1)
