@@ -7,8 +7,8 @@
 [![Oxygen.jl](https://img.shields.io/badge/Oxygen.jl-REST%20API-teal?style=for-the-badge)](https://github.com/ox-ygen/Oxygen.jl)
 [![V-JEPA 2](https://img.shields.io/badge/Meta%20AI-V--JEPA%202%20(ViT--L)-0081FB?style=for-the-badge&logo=meta)](https://github.com/facebookresearch/vjepa2)
 [![LangGraph](https://img.shields.io/badge/LangGraph-State%20Machine-FF6F00?style=for-the-badge)](https://langchain-ai.github.io/langgraph/)
-[![LlamaIndex](https://img.shields.io/badge/LlamaIndex-RAG%20Grounding-purple?style=for-the-badge)](https://www.llamaindex.ai/)
-[![Gemini 3.6 Flash](https://img.shields.io/badge/Google%20GenAI-Gemini%203.6%20Flash-4285F4?style=for-the-badge&logo=google)](https://ai.google.dev/)
+[![LlamaIndex](https://img.shields.io/badge/LlamaIndex-RAG%20Grounding%20(BGE--small)-purple?style=for-the-badge)](https://www.llamaindex.ai/)
+[![Gemini Flash](https://img.shields.io/badge/Google%20GenAI-Gemini%20Flash-4285F4?style=for-the-badge&logo=google)](https://ai.google.dev/)
 [![Copernicus EMS](https://img.shields.io/badge/Copernicus%20EMS-EMSR357%20Benchmark-E26B00?style=for-the-badge)](https://emergency.copernicus.eu/mapping/list-of-activations-rapid)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Tactical%20Console-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
 
@@ -78,10 +78,10 @@ flowchart TD
         C3["Status: CRITICAL / AT RISK --> Emergency Flag Asserted"]
     end
 
-    subgraph SYSTEM_2 ["System 2: Cognitive Reasoning Brain (LlamaIndex + Gemini 3.6 Flash)"]
-        D1["LlamaIndex Vector Index: Municipal SOP Knowledge Base (VDMA)"]
+    subgraph SYSTEM_2 ["System 2: Cognitive Reasoning Brain (LlamaIndex + Gemini Flash)"]
+        D1["LlamaIndex VectorStoreIndex: Municipal SOPs (BGE-small-en-v1.5)"]
         D2["Grounding Context: High-Voltage De-Energization, Vertical Evac, NDRF Vectors"]
-        D3["Gemini 3.6 Flash: Tactical Synthesis Engine (with 3-Tier Exponential Backoff)"]
+        D3["Gemini Flash: Tactical Synthesis Engine (with Dynamic Model & Backoff)"]
         D4["Common Alerting Protocol (CAP) Incident Dispatch Directive"]
     end
 
@@ -174,17 +174,22 @@ Parametric insurance enables instantaneous, automated catastrophe liquidity payo
 
 ---
 
-### 5. System 2 Reasoning Brain: Gemini 3.6 Flash + LlamaIndex RAG
+### 5. System 2 Reasoning Brain: Gemini Flash + LlamaIndex RAG
 * **Role:** High-order contextual deduction and standardized tactical order generation.
-* **RAG Grounding:** Queries vectorized district-level Standard Operating Procedures (e.g., *Visakhapatnam Disaster Management Authority [VDMA] Protocols*) stored under `knowledge_base/`.
-* **Resilient API Dispatch Architecture:**
-  * **3-Tier Exponential Backoff:** Wraps Google GenAI API calls in an automatic retry loop (`1.0s` $\rightarrow$ `2.0s` $\rightarrow$ `4.0s`) specifically targeting transient `503 UNAVAILABLE` or high-demand throttling.
+* **LlamaIndex Vector Store Architecture:**
+  * **Embedding Model:** Local `BAAI/bge-small-en-v1.5` (384-dimensional dense vectors via `llama_index.embeddings.huggingface`), operating completely offline with zero OpenAI key dependency.
+  * **Knowledge Base:** Vectorizes municipal disaster protocols in `knowledge_base/` (`visakhapatnam_sop.md`, `vddmp_2026.txt`).
+  * **Retrieval Dynamics:** Semantic similarity search (`similarity_top_k=2`) directly maps affected critical infrastructure nodes (e.g., `power_substation_alpha`, `district_hospital_central`) to exact emergency protocols (220kV transformer cutoffs, Level 3 vertical ICU evacuation, LMO tank securing, 104.4 MHz emergency radio channels).
+  * **Session Caching:** Vector store is indexed once into memory and cached via Streamlit `@st.cache_resource`, ensuring sub-millisecond retrieval latency during interactive runs.
+* **Resilient AI Dispatch Architecture:**
+  * **Dynamic Model Routing:** Uses `gemini-3.1-flash-lite` (with automatic candidate fallback to `gemini-3.5-flash-lite`), dynamically reflecting the active engine across the UI.
+  * **3-Tier Exponential Backoff:** Wraps Google GenAI API calls in an automatic retry loop (`1.0s` $\rightarrow$ `2.0s` $\rightarrow$ `4.0s`) targeting transient `503 UNAVAILABLE` or high-demand spikes.
   * **Graceful Degraded Fallback:** If all retries are exhausted, the system automatically falls back to:
     ```text
     [LIVE AI TEMPORARILY UNAVAILABLE — showing parametric trigger data only]
     ```
     preventing raw tracebacks from ever surfacing to operational commanders while keeping all deterministic physics, telemetry, and parametric insurance payouts fully visible.
-* **Output Standard:** Generates structured **Common Alerting Protocol (CAP)** tactical directives containing incident headers, threat evaluations, prioritized action directives, and NDRF deployment coordinates.
+* **Output Standard:** Generates structured **Common Alerting Protocol (CAP)** tactical directives containing incident headers, threat evaluations, authoritative parametric trigger blocks, prioritized action directives, and NDRF deployment coordinates.
 
 ---
 
@@ -244,9 +249,11 @@ V-JEPA 2 INFLUENCE ON INFRASTRUCTURE INUNDATION DEPTHS
 d:\julia engine\
 ├── server.jl                           # High-performance multi-threaded Julia CA physics engine (Oxygen.jl :8080)
 ├── app.py                              # Streamlit Cartographic Noir console with live operations & validation tabs
-├── main.py                             # LangGraph orchestrator (System 1 triage + LlamaIndex RAG + Gemini 3.6 Flash)
+├── main.py                             # LangGraph orchestrator (System 1 triage + LlamaIndex RAG + Gemini Flash)
 ├── backtest_fani.py                    # End-to-end historical backtest validation script for Cyclone Fani
 ├── perception_stage.py                 # Meta V-JEPA 2 (ViT-L FP16) satellite feature extraction pipeline
+├── final_lockdown_verify.py            # End-to-end multi-asset consistency & RAG verification test suite
+├── final_lockdown_verification_result.json # Verified audit ledger for all four simulated assets
 ├── verify_fani.py                      # IBTrACS GeoJSON parser & Folium spatial visualizer
 ├── test_client.py                      # Automated microservice sanity test client for port 8080
 ├── metrics_comparison.txt              # Citable benchmark scorecard (Pre vs. Post V-JEPA 2 integration)
@@ -255,10 +262,9 @@ d:\julia engine\
 ├── fani_simulated_flood_extent.geojson # Simulated flood polygon layer for GIS/Folium overlay
 ├── fani_ground_truth_flood_extent.geojson # Copernicus EMSR357 radar delineation ground truth polygon
 ├── FANI_IBTRACS_TRACK.geojson          # Official NOAA IBTrACS cyclone trajectory geodata
-├── knowledge_base/                     # District SOP knowledge repository
-│   ├── visakhapatnam_sop_power.txt     # High-voltage de-energization & substation protocols
-│   ├── visakhapatnam_sop_medical.txt   # Hospital vertical evacuation & life-support guidelines
-│   └── visakhapatnam_sop_transport.txt # Highway closures, flood markers, & NDRF evacuation routing
+├── knowledge_base/                     # Municipal SOP knowledge base vectorized by LlamaIndex
+│   ├── visakhapatnam_sop.md            # VDMA Cyclonic Inundation SOP (220kV cutoff, ICU evacuation, 104.4 MHz)
+│   └── vddmp_2026.txt                  # Visakhapatnam District Disaster Management Protocol (VDDMP-2026)
 ├── perception_cache/                   # Cached V-JEPA 2 embeddings & friction telemetry
 ├── Project.toml / Manifest.toml        # Julia package environment specifications
 ├── requirements.txt                    # Python dependencies
@@ -276,8 +282,8 @@ d:\julia engine\
 | **Serialization**| [JSON3.jl](https://github.com/quinnj/JSON3.jl) | `v1.14+` | Zero-allocation struct-to-JSON serialization |
 | **Perception** | [Meta V-JEPA 2](https://github.com/facebookresearch/vjepa2) | `ViT-L / FP16` | Satellite terrain feature extraction & friction tuning |
 | **Orchestration**| [LangGraph](https://langchain-ai.github.io/langgraph/) | `>=0.0.20` | Cyclical state machine with conditional routing edges |
-| **RAG Retrieval**| [LlamaIndex](https://www.llamaindex.ai/) | `>=0.9.0` | Localized municipal SOP vector search and knowledge ingestion |
-| **System 2 AI** | [Gemini 3.6 Flash](https://ai.google.dev/) | `google-genai` | Split-second reasoning and CAP dispatch synthesis |
+| **RAG Retrieval**| [LlamaIndex](https://www.llamaindex.ai/) | `>=0.10.0` | In-memory VectorStoreIndex + BAAI/bge-small-en-v1.5 embeddings |
+| **System 2 AI** | [Gemini Flash](https://ai.google.dev/) | `google-genai` | Split-second reasoning and CAP dispatch synthesis (gemini-3.1-flash-lite) |
 | **UI Dashboard** | [Streamlit](https://streamlit.io/) | `>=1.30.0` | Cartographic Noir incident control console |
 | **Mapping Engine**| [Folium](https://python-visualization.github.io/folium/) | `>=0.15.0` | Geospatial GIS layer with Esri satellite integration |
 | **Ground Truth** | [Copernicus EMS](https://emergency.copernicus.eu/) | `EMSR357` | Radar satellite ground truth flood delineation benchmark |
@@ -393,61 +399,50 @@ python backtest_fani.py
 ## Production Sample: Common Alerting Protocol (CAP) Output
 
 ```markdown
-**[INCIDENT HEADER]**  
-**ISSUING AUTHORITY:** Chief Autonomous Incident Commander | AEGIS  
-**ALERT TYPE:** COMMON ALERTING PROTOCOL (CAP) TACTICAL DISPATCH ORDER  
-**PROTOCOL FRAMEWORK:** Visakhapatnam District Disaster Management Protocol (VDDMP-2026)  
-**OPERATIONAL STATUS:** RED ALERT / IMMEDIATE ACTION  
-**TARGET JURISDICTION:** Visakhapatnam Coastal Sector  
+**[INCIDENT HEADER]**
+**AEGIS DISASTER COMMAND // SYSTEM ID: VDMA-2026-ALPHA**
+**STATUS:** ACTIVE CYCLONE EMERGENCY
+**METEOROLOGICAL DATA:** PEAK SURGE 5.0M // SUSTAINED WIND 135 KNOTS
+**COMMANDER:** CHIEF AUTONOMOUS INCIDENT COMMANDER (AEGIS)
 
 ---
 
-**[CRITICAL THREAT EVALUATION]**  
-* **Sustained Wind:** 135 knots  
-* **Peak Surge Applied:** 5.0 meters  
-* **Operational Summary:** Extreme cyclone event producing catastrophic storm surge inundation across littoral power assets and key coastal transportation arteries. Primary inland evacuation route remains compromise-free.
+**[CRITICAL THREAT EVALUATION]**
+Infrastructure failure imminent. Surge levels have exceeded safety thresholds across primary sectors. **Power_substation_alpha** is compromised (4.25m depth); **Coastal_highway_route1** is non-traversable (2.01m depth). **District_hospital_central** is at critical risk (0.42m depth), requiring immediate vertical escalation. **Inland_evac_route9** is confirmed as the sole viable logistics artery.
 
 ---
 
-**[PARAMETRIC TRIGGER STATUS]**  
-1. **Asset:** `power_substation_alpha` (power_grid)  
-   * **Inundation Depth:** 3.82 m  
-   * **Trigger Status:** **FULL_PAYOUT_TRIGGER** (100% Payout | Condition: >= 1.0m)  
-2. **Asset:** `coastal_highway_route1` (road)  
-   * **Inundation Depth:** 1.51 m  
-   * **Trigger Status:** **FULL_PAYOUT_TRIGGER** (100% Payout | Condition: >= 1.0m)  
-3. **Asset:** `district_hospital_central` (hospital)  
-   * **Inundation Depth:** 0.21 m  
-   * **Trigger Status:** **NO_TRIGGER** (0% Payout | Condition: < 0.3m)  
-4. **Asset:** `inland_evac_route9` (road)  
-   * **Inundation Depth:** 0.00 m  
-   * **Trigger Status:** **NO_TRIGGER** (0% Payout | Condition: Safe)  
+**[PARAMETRIC TRIGGER STATUS]**
+1. **power_substation_alpha**: 4.2494m depth | **STATUS: FULL_PAYOUT_TRIGGER (100%)**
+2. **district_hospital_central**: 0.4247m depth | **STATUS: PARTIAL_PAYOUT_TRIGGER (50%)**
+3. **coastal_highway_route1**: 2.0095m depth | **STATUS: FULL_PAYOUT_TRIGGER (100%)**
+4. **inland_evac_route9**: 0.0m depth | **STATUS: NO_TRIGGER (0%)**
 
 ---
 
-**[MANDATORY ACTION DIRECTIVES]**  
+**[MANDATORY ACTION DIRECTIVES]**
 
-### 1. POWER & ELECTRICAL INFRASTRUCTURE (DEPARTMENT: POWER)
-* **Target:** `power_substation_alpha` (Depth: 3.82m | Threshold: > 1.0m CRITICAL)
-  1. **EXECUTE MANDATORY GRID DE-ENERGIZATION IMMEDIATELY.** Dispatch emergency crew to sever main trunk lines.
-  2. De-energize primary 220kV step-down transformers to prevent flashover and catastrophic feedback.
-  3. Isolate coastal feeder circuits 4 through 9. Reroute vital medical telemetry loads to inland grid.
-
-### 2. ARTERIAL ROADS & TRANSPORTATION CORRIDORS (DEPARTMENT: TRANSPORT)
-* **Target:** `coastal_highway_route1` (Depth: 1.51m | Threshold: > 0.3m CRITICAL)
-  1. Enforce immediate police barricades and red-flag total closure on `coastal_highway_route1`.
-  2. Reroute 100% of civilian evacuation convoys to `inland_evac_route9` (Depth: 0.0m | SAFE).
-
-### 3. HEALTHCARE & EMERGENCY MEDICAL FACILITIES (DEPARTMENT: MEDICAL)
-* **Target:** `district_hospital_central` (Depth: 0.21m | Status: AT RISK)
-  1. Maintain continuous telemetry; prime Floor 2 diesel backup generators. Current depth (0.21m) is below mandatory relocation trigger (>0.3m SOP / >0.5m Critical). **DO NOT** execute full ICU evacuation at this time.
+*   **POWER DIVISION**: 
+    *   Execute IMMEDIATE grid de-energization of **power_substation_alpha** to prevent catastrophic flashover. 
+    *   Isolate coastal feeders 4–9; switch hospital telemetry loads to elevated inland grid. 
+    *   Deploy mobile DG sets to hospital site immediately.
+*   **MEDICAL DIVISION**: 
+    *   Initiate emergency vertical evacuation of **district_hospital_central** patients to Level 3.
+    *   Secure LMO tanks; transition life support to UPS/Rooftop auxiliary power.
+*   **TRANSPORT DIVISION**: 
+    *   Enforce absolute closure of **coastal_highway_route1**. 
+    *   Divert all transit traffic to **inland_evac_route9**. 
+    *   Deploy heavy recovery assets to highway intersections.
 
 ---
 
-**[NDRF DEPLOYMENT]**  
-1. **Asset Access Support:** Dispatch NDRF Unit Alpha to provide amphibious escort for power crews at `power_substation_alpha`.  
-2. **Corridor Enforcement:** Deploy NDRF Unit Bravo to setup flood barricades on `coastal_highway_route1`.  
-3. **Prepositioning:** Standby high-clearance amphibious transit near `district_hospital_central` if depth exceeds 0.30m.
+**[NDRF DEPLOYMENT]**
+*   **Mission Profile**: High-clearance amphibious casualty transit.
+*   **Target**: **district_hospital_central**.
+*   **Objective**: Extraction and transport of critical patients to inland university hospital. 
+*   **Authority**: VDDMP-2026 // Autonomous Override Active.
+
+**END OF DISPATCH // AEGIS COMMAND**
 ```
 
 ---
