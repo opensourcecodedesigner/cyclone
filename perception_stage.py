@@ -45,6 +45,11 @@ CACHE_DIR = "perception_cache"
 EMBEDDINGS_FILE = os.path.join(CACHE_DIR, "vjepa2_perception_embeddings.json")
 TILE_SAMPLE_FILE = os.path.join(CACHE_DIR, "sentinel_fani_sample_tile.npy")
 
+# Local V-JEPA 2 repository path (avoids GitHub download, fixes localhost:8300 URL bug)
+VJEPA2_LOCAL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vjepa2")
+# Directory for real satellite imagery (.npy or .tif GeoTIFF files)
+SATELLITE_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "satellite_data")
+
 def get_system_gpu_telemetry() -> dict:
     """Queries NVIDIA-SMI for RTX 4050 6GB VRAM utilization metrics."""
     telemetry = {
@@ -74,26 +79,9 @@ def get_system_gpu_telemetry() -> dict:
 
 def fix_meta_vjepa_url():
     """
-    Sanitizes Meta's official repository testing configuration bug where
-    VJEPA_BASE_URL was set to 'http://localhost:8300' instead of Meta's public
-    production CDN 'https://dl.fbaipublicfiles.com/vjepa2'.
-    Ensures both disk cache and in-memory modules use the authentic production URL.
+    Optional URL utility function.
     """
-    try:
-        hub_dir = torch.hub.get_dir()
-        vjepa_repo = os.path.join(hub_dir, "facebookresearch_vjepa2_main")
-        backbone_file = os.path.join(vjepa_repo, "src", "hub", "backbones.py")
-        if os.path.exists(backbone_file):
-            with open(backbone_file, "r", encoding="utf-8") as f:
-                content = f.read()
-            if "localhost:8300" in content:
-                content = content.replace("http://localhost:8300", "https://dl.fbaipublicfiles.com/vjepa2")
-                with open(backbone_file, "w", encoding="utf-8") as f:
-                    f.write(content)
-        if "src.hub.backbones" in sys.modules:
-            sys.modules["src.hub.backbones"].VJEPA_BASE_URL = "https://dl.fbaipublicfiles.com/vjepa2"
-    except Exception as e:
-        pass
+    pass
 
 # =============================================================================
 # 2. V-JEPA 2 VIT-L MODEL LOADER (AUTHENTIC CHECKPOINT, FROZEN, FP16)
@@ -116,13 +104,24 @@ def load_vjepa2_vit_large(device_str: str = "auto") -> tuple:
     print("Architecture: ViT-Large")
     print("Pretrained: True")
 
-    # Load from torch hub with pretrained checkpoint weights
-    hub_res = torch.hub.load(
-        "facebookresearch/vjepa2",
-        "vjepa2_vit_large",
-        pretrained=True,
-        trust_repo=True
-    )
+    # Load V-JEPA 2 from local repository (offline, no GitHub download required)
+    if os.path.exists(os.path.join(VJEPA2_LOCAL_DIR, "src", "hub", "backbones.py")):
+        print(f"   -> Loading from LOCAL repository: {VJEPA2_LOCAL_DIR}")
+        # Add local repo to Python path for direct import
+        if VJEPA2_LOCAL_DIR not in sys.path:
+            sys.path.insert(0, VJEPA2_LOCAL_DIR)
+        # Import model builder directly (bypasses hubconf.py evals dependency chain)
+        from src.hub.backbones import vjepa2_vit_large as _build_vjepa2_vit_large
+        hub_res = _build_vjepa2_vit_large(pretrained=True)
+    else:
+        # Fallback: download from GitHub via torch hub
+        print("   -> Local vjepa2/ not found, downloading from facebookresearch/vjepa2...")
+        hub_res = torch.hub.load(
+            "facebookresearch/vjepa2",
+            "vjepa2_vit_large",
+            pretrained=True,
+            trust_repo=True
+        )
     encoder = hub_res[0] if isinstance(hub_res, (list, tuple)) else hub_res
 
     # Strictly freeze parameters for inference-only execution
@@ -156,19 +155,35 @@ def load_vjepa2_vit_large(device_str: str = "auto") -> tuple:
 # =============================================================================
 def get_sentinel_tile(tile_path: str = None) -> torch.Tensor:
     """
-    Ingests or synthesizes a 16-frame spatial temporal clip from Sentinel-1/2 SAR
-    telemetry over the Puri / Odisha coastal landfall zone.
+    Ingests satellite data from one of three sources (in priority order):
+    1. Explicit tile_path argument (.npy or .tif file)
+    2. Real satellite imagery from satellite_data/ directory (.npy or .tif)
+    3. Synthesized SAR coastal tile clip (deterministic fallback)
     Shape: [1, 3, 16, 224, 224] (Batch, Channels, Temporal Frames, Height, Width).
     """
     os.makedirs(CACHE_DIR, exist_ok=True)
+    data = None
+    source_label = "synthetic"
+
+    # Priority 1: Explicit path argument
     if tile_path and os.path.exists(tile_path):
-        data = np.load(tile_path)
-    else:
-        # Synthesize realistic high-water-absorption SAR coastal tile clip
-        # Channel 0: VV polarization (water vs land contrast)
-        # Channel 1: VH polarization (volume scattering / vegetation roughness)
-        # Channel 2: Optical Infrared / Cloud albedo
-        np.random.seed(20190503) # Cyclone Fani landfall seed
+        data = _load_satellite_file(tile_path)
+        if data is not None:
+            source_label = f"explicit: {os.path.basename(tile_path)}"
+
+    # Priority 2: Real satellite data directory
+    if data is None and os.path.isdir(SATELLITE_DATA_DIR):
+        for fname in sorted(os.listdir(SATELLITE_DATA_DIR)):
+            fpath = os.path.join(SATELLITE_DATA_DIR, fname)
+            if fname.endswith((".npy", ".tif", ".tiff")):
+                data = _load_satellite_file(fpath)
+                if data is not None:
+                    source_label = f"satellite_data/{fname}"
+                    break
+
+    # Priority 3: Synthesized SAR coastal tile (deterministic fallback)
+    if data is None:
+        np.random.seed(20190503)  # Cyclone Fani landfall seed
         data = np.random.randn(3, 16, 224, 224).astype(np.float32)
         # Inject coastal gradient and high-saturation water body (low backscatter in SAR)
         for t in range(16):
@@ -176,9 +191,89 @@ def get_sentinel_tile(tile_path: str = None) -> torch.Tensor:
             data[1, t, 112:, :] += 0.9  # Saturated coastal marsh vegetation
             data[2, t, :, :]    += 1.2  # Dense cloud optical thickness from cyclone eyewall
         np.save(TILE_SAMPLE_FILE, data)
+        source_label = "synthetic (Fani seed 20190503)"
 
-    tensor = torch.from_numpy(data).unsqueeze(0) # [1, 3, 16, 224, 224]
+    print(f"   -> Satellite tile source: {source_label}")
+    print(f"   -> Raw data shape: {data.shape}")
+
+    # Normalize to [3, 16, 224, 224] if needed
+    data = _normalize_tile_shape(data)
+
+    tensor = torch.from_numpy(data).unsqueeze(0)  # [1, 3, 16, 224, 224]
+    print(f"   -> Input tensor shape: {list(tensor.shape)}")
     return tensor
+
+
+def _load_satellite_file(fpath: str):
+    """Loads a satellite data file (.npy or .tif GeoTIFF) and returns a numpy array."""
+    try:
+        if fpath.endswith(".npy"):
+            return np.load(fpath).astype(np.float32)
+        elif fpath.endswith((".tif", ".tiff")):
+            try:
+                import rasterio
+                with rasterio.open(fpath) as src:
+                    return src.read().astype(np.float32)  # [C, H, W]
+            except ImportError:
+                print(f"   -> rasterio not installed, cannot load GeoTIFF: {fpath}")
+                return None
+    except Exception as e:
+        print(f"   -> Failed to load {fpath}: {e}")
+    return None
+
+
+def _normalize_tile_shape(data: np.ndarray) -> np.ndarray:
+    """
+    Normalizes satellite data to shape [3, 16, 224, 224].
+    Handles common input shapes:
+    - [3, 16, 224, 224] -> pass through
+    - [C, H, W] -> replicate to 16 frames, center crop/pad to 224x224
+    - [C, T, H, W] -> adjust channels/frames, center crop/pad spatial dims
+    """
+    if data.ndim == 3:
+        # Single image [C, H, W] -> replicate to 16 temporal frames
+        C, H, W = data.shape
+        data = data[:3] if C > 3 else (np.pad(data, ((0, max(0, 3 - C)), (0, 0), (0, 0)), mode="edge") if C < 3 else data)
+        data = _crop_or_pad_2d(data, 224, 224)
+        data = np.stack([data] * 16, axis=1)  # [3, 16, 224, 224]
+
+    elif data.ndim == 4:
+        C, T, H, W = data.shape
+        # Adjust channels
+        data = data[:3] if C > 3 else (np.pad(data, ((0, max(0, 3 - C)), (0, 0), (0, 0), (0, 0)), mode="edge") if C < 3 else data)
+        # Adjust temporal frames to 16
+        if T < 16:
+            reps = int(np.ceil(16 / T))
+            data = np.tile(data, (1, reps, 1, 1))[:, :16, :, :]
+        elif T > 16:
+            data = data[:, :16, :, :]
+        # Crop/pad spatial dims
+        _, _, H, W = data.shape
+        if H != 224 or W != 224:
+            reshaped = data.reshape(-1, H, W)  # [3*16, H, W]
+            reshaped = _crop_or_pad_2d(reshaped, 224, 224)
+            data = reshaped.reshape(3, 16, 224, 224)
+
+    return data.astype(np.float32)
+
+
+def _crop_or_pad_2d(data: np.ndarray, target_h: int, target_w: int) -> np.ndarray:
+    """Center crop or edge-pad a [..., H, W] array to [..., target_h, target_w]."""
+    H, W = data.shape[-2], data.shape[-1]
+    # Crop if larger
+    if H > target_h:
+        start = (H - target_h) // 2
+        data = data[..., start:start + target_h, :]
+    if W > target_w:
+        start = (W - target_w) // 2
+        data = data[..., :, start:start + target_w]
+    # Pad if smaller
+    H, W = data.shape[-2], data.shape[-1]
+    if H < target_h or W < target_w:
+        pad_h, pad_w = max(0, target_h - H), max(0, target_w - W)
+        pad_spec = [(0, 0)] * (data.ndim - 2) + [(0, pad_h), (0, pad_w)]
+        data = np.pad(data, pad_spec, mode="edge")
+    return data
 
 # =============================================================================
 # 4. V-JEPA 2 FEATURE EXTRACTION & PHYSICAL PARAMETER MAPPING

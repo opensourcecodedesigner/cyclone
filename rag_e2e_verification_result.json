@@ -1,0 +1,73 @@
+{
+  "vjepa": {
+    "model": "facebookresearch/vjepa2 (ViT-Large)",
+    "parameters_m": 303.9,
+    "input_tensor_shape": [
+      1,
+      3,
+      16,
+      224,
+      224
+    ],
+    "latent_tokens": 1568,
+    "embedding_dim": 1024,
+    "pretrained": true,
+    "checkpoint_status": "AUTHENTIC_WEIGHTS_LOADED",
+    "physical_telemetry": {
+      "land_saturation_index": 0.829,
+      "cloud_optical_density": 0.862,
+      "surface_roughness_manning_n": 0.06,
+      "effective_friction_multiplier": 1.3,
+      "soil_infiltration_capacity_pct": 17.1
+    },
+    "performance": {
+      "device": "cuda:0 (NVIDIA GeForce RTX 4050 Laptop GPU)",
+      "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "vram_total_mb": 6141.0,
+      "vram_used_mb": 3980.0,
+      "vram_free_mb": 1941.0,
+      "inference_latency_ms": 369.49
+    }
+  },
+  "julia": {
+    "hosp_depth": 0.4247,
+    "status": "At Risk",
+    "vulnerability": 0.8494,
+    "effective_diffusion": null
+  },
+  "trigger": {
+    "asset_id": "district_hospital_central",
+    "asset_type": "hospital",
+    "flood_depth_m": 0.4247,
+    "trigger_status": "PARTIAL_PAYOUT_TRIGGER",
+    "payout_percentage": 50,
+    "policy_condition": ">= 1.0m (100%) | >= 0.3m (50%)"
+  },
+  "retrieval": {
+    "count": 2,
+    "sources": [
+      "visakhapatnam_sop.md",
+      "vddmp_2026.txt"
+    ],
+    "scores": [
+      0.7495438791544083,
+      0.6944465543511801
+    ]
+  },
+  "checks": {
+    "has_hospital": true,
+    "has_partial": true,
+    "has_depth": true,
+    "matched_terms": [
+      "vertical",
+      "icu",
+      "evacuat",
+      "de-energiz",
+      "substation",
+      "generator",
+      "oxygen",
+      "ndrf"
+    ]
+  },
+  "dispatch_snippet": "**[INCIDENT HEADER]**\n**AEGIS DISPATCH ID:** CYCLONE-VZG-2026-004\n**STATUS:** EMERGENCY // CRITICAL\n**EVENT:** SEVERE CYCLONIC STORM | 135 KNOT SUSTAINED WINDS | 5.0M PEAK SURGE\n**COMMANDER:** AEGIS CHIEF AUTONOMOUS INCIDENT COMMANDER\n\n---\n\n**[CRITICAL THREAT EVALUATION]**\nThe infrastructure grid has reached catastrophic breach levels. \n*   **Power Grid:** `power_substation_alpha` (4.25m depth) exceeds critical threshold by 325%. Immediate grid isolation required.\n*   **Medical Facility:** `district_hospital_central` (0.42m depth) exceeds critical risk threshold (0.3m). Immediate patient stabi"
+}

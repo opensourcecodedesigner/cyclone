@@ -17,3 +17,9 @@ pyproj>=3.6.0
 llama-index-core>=0.10.0
 llama-index-embeddings-huggingface>=0.2.0
 sentence-transformers>=2.2.0
+
+# V-JEPA 2 Satellite Perception Stage (local source from vjepa2/)
+torch>=2.0.0
+torchvision
+timm>=0.9.0
+einops>=0.7.0

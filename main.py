@@ -150,7 +150,7 @@ def system1_triage_node(state: GraphState):
     """
     response = None
     last_err = None
-    candidate_models = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.6-flash']
+    candidate_models = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite', 'gemini-3.5-flash']
     for candidate_model in candidate_models:
         for attempt in range(2):
             try:
@@ -160,6 +160,8 @@ def system1_triage_node(state: GraphState):
                     config=types.GenerateContentConfig(response_mime_type="application/json")
                 )
                 decision = json.loads(response.text)
+                if isinstance(decision, list) and len(decision) > 0:
+                    decision = decision[0]
                 last_err = None
                 print(f"   -> System 1 Triage evaluated by {candidate_model}")
                 break
@@ -177,6 +179,8 @@ def system1_triage_node(state: GraphState):
         print(f"\n{'='*75}\n⚠️  FALLBACK: {msg}\n   Using deterministic Jev Proxy triage.\n{'='*75}")
         is_emer = any(n.get("status") in ("Critical", "At Risk") for n in node_results)
         decision = {"is_emergency": is_emer, "target_department": "POWER" if is_emer else "NONE"}
+    if isinstance(decision, list) and len(decision) > 0:
+        decision = decision[0]
     print(f"   -> Decision: {decision}")
     return {"triage_decision": decision}
 
@@ -184,7 +188,10 @@ def system1_triage_node(state: GraphState):
 # 4. CONDITIONAL EDGE: THE SWITCH
 # =============================================================================
 def route_triage(state: GraphState):
-    if state["triage_decision"]["is_emergency"]:
+    triage = state.get("triage_decision", {})
+    if isinstance(triage, list) and len(triage) > 0:
+        triage = triage[0]
+    if isinstance(triage, dict) and triage.get("is_emergency", False):
         print("   -> 🚨 Emergency Detected! Routing to LlamaIndex RAG...")
         return "retrieve_sop"
     print("   -> ✅ Safe Zone. Halting compute.")
@@ -281,7 +288,7 @@ def system2_dispatch_node(state: GraphState):
     """
     response = None
     last_err = None
-    candidate_models = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.6-flash']
+    candidate_models = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite', 'gemini-3.5-flash']
     for candidate_model in candidate_models:
         for attempt in range(2):
             try:

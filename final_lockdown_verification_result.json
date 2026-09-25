@@ -1,0 +1,64 @@
+{
+  "gemini_model": "gemini-3.1-flash-lite",
+  "vjepa_telemetry": {
+    "land_saturation": 0.829,
+    "manning_n": 0.06,
+    "friction_multiplier": 1.3,
+    "effective_iterations": 156
+  },
+  "rag_context_length": 2602,
+  "rag_genuinely_used": true,
+  "triage": {
+    "is_emergency": true,
+    "target_department": "POWER",
+    "threat_summary": "Substation Alpha is flooded at critical depth; Coastal Highway and Hospital also impacted."
+  },
+  "assets": {
+    "power_substation_alpha": {
+      "julia_depth_m": 4.2494,
+      "status": "Critical",
+      "vulnerability_score": 1.0,
+      "trigger_status": "FULL_PAYOUT_TRIGGER",
+      "payout_pct": 100,
+      "in_cap_dispatch": true,
+      "depth_in_cap": true,
+      "trigger_in_cap": true,
+      "pass": true
+    },
+    "district_hospital_central": {
+      "julia_depth_m": 0.4247,
+      "status": "At Risk",
+      "vulnerability_score": 0.8494,
+      "trigger_status": "PARTIAL_PAYOUT_TRIGGER",
+      "payout_pct": 50,
+      "in_cap_dispatch": true,
+      "depth_in_cap": true,
+      "trigger_in_cap": true,
+      "pass": true
+    },
+    "coastal_highway_route1": {
+      "julia_depth_m": 2.0095,
+      "status": "Critical",
+      "vulnerability_score": 1.0,
+      "trigger_status": "FULL_PAYOUT_TRIGGER",
+      "payout_pct": 100,
+      "in_cap_dispatch": true,
+      "depth_in_cap": true,
+      "trigger_in_cap": true,
+      "pass": true
+    },
+    "inland_evac_route9": {
+      "julia_depth_m": 0.0,
+      "status": "Safe",
+      "vulnerability_score": 0.0,
+      "trigger_status": "NO_TRIGGER",
+      "payout_pct": 0,
+      "in_cap_dispatch": true,
+      "depth_in_cap": true,
+      "trigger_in_cap": true,
+      "pass": true
+    }
+  },
+  "all_passed": true,
+  "dispatch_order": "**[INCIDENT HEADER]**\n**AEGIS DISASTER COMMAND // SYSTEM ID: VDMA-2026-ALPHA**\n**STATUS:** ACTIVE CYCLONE EMERGENCY\n**METEOROLOGICAL DATA:** PEAK SURGE 5.0M // SUSTAINED WIND 135 KNOTS\n**COMMANDER:** CHIEF AUTONOMOUS INCIDENT COMMANDER (AEGIS)\n\n---\n\n**[CRITICAL THREAT EVALUATION]**\nInfrastructure failure imminent. Surge levels have exceeded safety thresholds across primary sectors. **Power_substation_alpha** is compromised (4.25m depth); **Coastal_highway_route1** is non-traversable (2.01m depth). **District_hospital_central** is at critical risk (0.42m depth), requiring immediate vertical escalation. **Inland_evac_route9** is confirmed as the sole viable logistics artery.\n\n---\n\n**[PARAMETRIC TRIGGER STATUS]**\n1. **power_substation_alpha**: 4.2494m depth | **STATUS: FULL_PAYOUT_TRIGGER (100%)**\n2. **district_hospital_central**: 0.4247m depth | **STATUS: PARTIAL_PAYOUT_TRIGGER (50%)**\n3. **coastal_highway_route1**: 2.0095m depth | **STATUS: FULL_PAYOUT_TRIGGER (100%)**\n4. **inland_evac_route9**: 0.0m depth | **STATUS: NO_TRIGGER (0%)**\n\n---\n\n**[MANDATORY ACTION DIRECTIVES]**\n\n*   **POWER DIVISION**: \n    *   Execute IMMEDIATE grid de-energization of **power_substation_alpha** to prevent catastrophic flashover. \n    *   Isolate coastal feeders 4\u20139; switch hospital telemetry loads to elevated inland grid. \n    *   Deploy mobile DG sets to hospital site immediately.\n*   **MEDICAL DIVISION**: \n    *   Initiate emergency vertical evacuation of **district_hospital_central** patients to Level 3.\n    *   Secure LMO tanks; transition life support to UPS/Rooftop auxiliary power.\n*   **TRANSPORT DIVISION**: \n    *   Enforce absolute closure of **coastal_highway_route1**. \n    *   Divert all transit traffic to **inland_evac_route9**. \n    *   Deploy heavy recovery assets to highway intersections.\n\n---\n\n**[NDRF DEPLOYMENT]**\n*   **Mission Profile**: High-clearance amphibious casualty transit.\n*   **Target**: **district_hospital_central**.\n*   **Objective**: Extraction and transport of critical patients to inland university hospital. \n*   **Authority**: VDDMP-2026 // Autonomous Override Active.\n\n**END OF DISPATCH // AEGIS COMMAND**"
+}

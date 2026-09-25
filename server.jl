@@ -312,6 +312,32 @@ end
         wind_boost = (wind_speed > 100.0) ? (wind_speed - 100.0) * 0.015 : 0.0
         effective_surge = surge_height + wind_boost
 
+        # =====================================================================
+        # V-JEPA 2 SATELLITE TERRAIN PERCEPTION INTEGRATION
+        # Extracts land saturation, Manning's n, and friction multiplier from
+        # the Meta V-JEPA 2 ViT-L satellite perception stage (Python front-end).
+        # These dynamically modulate the CA diffusion rate:
+        #   - Saturated soil (high land_saturation) -> faster flood spread
+        #   - High surface roughness (friction_multiplier > 1) -> slower diffusion
+        # Clamped to [0.05, 0.25] for CFL stability in 2D scheme.
+        # =====================================================================
+        vjepa2_active = false
+        land_saturation = 0.0
+        manning_n = 0.035
+        friction_multiplier = 1.0
+        if haskey(payload, "vjepa2_perception")
+            vp = payload["vjepa2_perception"]
+            land_saturation = Float64(get(vp, "land_saturation", 0.0))
+            manning_n = Float64(get(vp, "surface_roughness_manning_n", 0.035))
+            friction_multiplier = Float64(get(vp, "friction_multiplier", 1.0))
+            vjepa2_active = true
+            @info "V-JEPA 2 perception active" land_saturation manning_n friction_multiplier
+        end
+
+        # Compute V-JEPA 2 modulated diffusion rate
+        sat_boost = 1.0 + land_saturation * 0.15
+        effective_diffusion = clamp(DIFFUSION_RATE * sat_boost / max(friction_multiplier, 0.1), 0.05, 0.25)
+
         # 3. Setup Grid (from payload or high-fidelity UI fallback)
         local dem, coastline_mask
         if haskey(payload, "dem") && haskey(payload, "coastline_mask")
@@ -340,6 +366,7 @@ end
 
         # 4. MULTI-THREADED PHYSICS LOOP
         # Uses all CPU cores via Threads.@threads for hyper-fast CA simulation
+        # diffusion_rate is dynamically modulated by V-JEPA 2 satellite perception
         simulate_surge!(
             water_depth,
             water_next,
@@ -347,7 +374,7 @@ end
             coastline_mask,
             effective_surge;
             iterations = iterations,
-            diffusion_rate = DIFFUSION_RATE,
+            diffusion_rate = effective_diffusion,
             continuous_surge = CONTINUOUS_SURGE
         )
 
@@ -403,7 +430,9 @@ end
             "threads_used" => Threads.nthreads(),
             "elapsed_ms" => elapsed_ms,
             "max_inland_penetration" => max_penetration_m,
-            "node_results" => node_results
+            "node_results" => node_results,
+            "vjepa2_perception_applied" => vjepa2_active,
+            "effective_diffusion_rate" => round(effective_diffusion, digits=4)
         )
 
         return HTTP.Response(
