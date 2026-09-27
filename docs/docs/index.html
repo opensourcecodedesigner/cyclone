@@ -45,7 +45,7 @@
       </nav>
 
       <div class="nav-actions">
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn-primary-sm">
+        <a href="https://github.com/opensourcecodedesigner/cyclone" target="_blank" rel="noopener noreferrer" class="btn-primary-sm">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
           </svg>
@@ -85,17 +85,17 @@
         <!-- Hero Highlights Row -->
         <div class="hero-metrics-pill reveal">
           <div class="hero-metric-item">
-            <span class="hero-metric-num" data-counter="375" data-suffix="ms">0ms</span>
+            <span class="hero-metric-num" data-counter="375" data-suffix="ms">375ms</span>
             <span class="hero-metric-lbl">V-JEPA 2 Latency</span>
           </div>
           <div class="hero-metric-divider"></div>
           <div class="hero-metric-item">
-            <span class="hero-metric-num" data-counter="0.82" data-decimals="2" data-suffix="ms">0.00ms</span>
+            <span class="hero-metric-num" data-counter="0.82" data-decimals="2" data-suffix="ms">0.82ms</span>
             <span class="hero-metric-lbl">Julia Physics Step</span>
           </div>
           <div class="hero-metric-divider"></div>
           <div class="hero-metric-item">
-            <span class="hero-metric-num" data-counter="85.6" data-decimals="1" data-suffix="%">0.0%</span>
+            <span class="hero-metric-num" data-counter="85.6" data-decimals="1" data-suffix="%">85.6%</span>
             <span class="hero-metric-lbl">Historical Ground-Truth IoU</span>
           </div>
           <div class="hero-metric-divider"></div>
@@ -307,7 +307,7 @@
               <!-- Spec Sheet Row (Staggered Fade) -->
               <div class="spec-sheet">
                 <div class="spec-item" style="--i: 0">
-                  <div class="spec-value" data-counter="303.9" data-decimals="1" data-suffix="M">0.0M</div>
+                  <div class="spec-value" data-counter="303.9" data-decimals="1" data-suffix="M">303.9M</div>
                   <div class="spec-label">Model Parameters</div>
                 </div>
                 <div class="spec-item" style="--i: 1">
@@ -319,7 +319,7 @@
                   <div class="spec-label">Execution Target</div>
                 </div>
                 <div class="spec-item" style="--i: 3">
-                  <div class="spec-value" data-counter="375" data-suffix="ms">0ms</div>
+                  <div class="spec-value" data-counter="375" data-suffix="ms">375ms</div>
                   <div class="spec-label">Forward Pass Latency</div>
                 </div>
               </div>
@@ -422,11 +422,11 @@
 
               <div class="spec-sheet">
                 <div class="spec-item" style="--i: 0">
-                  <div class="spec-value" data-counter="0.82" data-decimals="2" data-suffix="ms">0.00ms</div>
+                  <div class="spec-value" data-counter="0.82" data-decimals="2" data-suffix="ms">0.82ms</div>
                   <div class="spec-label">Time-Step Latency</div>
                 </div>
                 <div class="spec-item" style="--i: 1">
-                  <div class="spec-value" data-counter="1.0" data-decimals="1" data-suffix="M">0.0M</div>
+                  <div class="spec-value" data-counter="1.0" data-decimals="1" data-suffix="M">1.0M</div>
                   <div class="spec-label">Grid Cells / Second</div>
                 </div>
                 <div class="spec-item" style="--i: 2">
@@ -465,7 +465,7 @@
 
               <h3 class="stage-title">Historical Ground-Truth Calibration Engine</h3>
               <p class="stage-lead">
-                Scores numerical flood forecasts against actual historical satellite SAR ground truth using spatial Intersection over Union (IoU) and Hausdorff boundary distance.
+                Scores numerical flood forecasts against actual historical satellite SAR ground truth using spatial Intersection over Union (IoU).
               </p>
 
               <div class="stage-body">
@@ -478,19 +478,19 @@
                     <span class="mm-lbl">Intersection over Union (IoU)</span>
                   </div>
                   <div class="mini-metric">
-                    <span class="mm-val">89.4%</span>
+                    <span class="mm-val">86.2%</span>
                     <span class="mm-lbl">Spatial Precision</span>
                   </div>
                   <div class="mini-metric">
-                    <span class="mm-val">82.1%</span>
+                    <span class="mm-val">99.3%</span>
                     <span class="mm-lbl">Critical Area Recall</span>
                   </div>
                 </div>
               </div>
 
-              <div class="spec-sheet">
+              <div class="spec-sheet spec-sheet-3">
                 <div class="spec-item" style="--i: 0">
-                  <div class="spec-value" data-counter="85.6" data-decimals="1" data-suffix="%">0.0%</div>
+                  <div class="spec-value" data-counter="85.6" data-decimals="1" data-suffix="%">85.6%</div>
                   <div class="spec-label">Spatial IoU Score</div>
                 </div>
                 <div class="spec-item" style="--i: 1">
@@ -500,10 +500,6 @@
                 <div class="spec-item" style="--i: 2">
                   <div class="spec-value">Puri Coastal Sector</div>
                   <div class="spec-label">Calibration Domain</div>
-                </div>
-                <div class="spec-item" style="--i: 3">
-                  <div class="spec-value" data-counter="14.2" data-decimals="1" data-suffix="m">0.0m</div>
-                  <div class="spec-label">Hausdorff 95 Boundary Error</div>
                 </div>
               </div>
 
@@ -541,9 +537,9 @@
                   Emergency responders cannot afford ungrounded LLM improvisations. AEGIS indexes official NDRF cyclone response operating procedures, hospital generator elevations, road impassability thresholds, and cyclone shelter capacities into a local vector index. When the simulation flags high-risk sectors, the exact protocol snippet is pulled and injected into the prompt.
                 </p>
                 <div class="rag-quote-box">
-                  <div class="quote-header">RETRIEVED OPERATIONAL PROTOCOL (NDRF SOP §4.2)</div>
+                  <div class="quote-header">RETRIEVED OPERATIONAL PROTOCOL</div>
                   <div class="quote-body">
-                    "When inundation exceeds 0.75m within 300m of NH-316, prioritize evacuation of Sector 4 medical outposts using Type-II inflatable rescue boats. Relocate non-ambulatory patients to Cyclone Shelter B-07 (elevation 18.2m)."
+                    Retrieved Protocol [visakhapatnam_sop.md]: Evacuation sequence initiated for low-lying coastal sectors. Asset vulnerability exceeds operational threshold.
                   </div>
                 </div>
               </div>
@@ -558,7 +554,7 @@
                   <div class="spec-label">Embedding Model</div>
                 </div>
                 <div class="spec-item" style="--i: 2">
-                  <div class="spec-value" data-counter="11.4" data-decimals="1" data-suffix="ms">0.0ms</div>
+                  <div class="spec-value" data-counter="11.4" data-decimals="1" data-suffix="ms">11.4ms</div>
                   <div class="spec-label">Vector Search Time</div>
                 </div>
                 <div class="spec-item" style="--i: 3">
@@ -795,7 +791,7 @@
           <div class="validation-info reveal">
             <div class="iou-hero-badge">
               <div class="iou-number-wrap">
-                <span class="iou-number" data-counter="85.6" data-decimals="1" data-suffix="%">0.0%</span>
+                <span class="iou-number" data-counter="85.6" data-decimals="1" data-suffix="%">85.6%</span>
                 <span class="iou-caption">SPATIAL INTERSECTION OVER UNION (IoU)</span>
               </div>
               <div class="iou-grade">TIER-1 ACCURACY</div>
@@ -803,20 +799,16 @@
 
             <div class="stats-matrix">
               <div class="stat-cell">
-                <span class="stat-num" data-counter="89.4" data-decimals="1" data-suffix="%">0.0%</span>
+                <span class="stat-num" data-counter="86.2" data-decimals="1" data-suffix="%">86.2%</span>
                 <span class="stat-text">Precision (Low False Alarms)</span>
               </div>
               <div class="stat-cell">
-                <span class="stat-num" data-counter="82.1" data-decimals="1" data-suffix="%">0.0%</span>
+                <span class="stat-num" data-counter="99.3" data-decimals="1" data-suffix="%">99.3%</span>
                 <span class="stat-text">Recall (Hazard Detection)</span>
               </div>
               <div class="stat-cell">
-                <span class="stat-num" data-counter="85.6" data-decimals="1" data-suffix="%">0.0%</span>
+                <span class="stat-num" data-counter="85.6" data-decimals="1" data-suffix="%">85.6%</span>
                 <span class="stat-text">Harmonic F1 Score</span>
-              </div>
-              <div class="stat-cell">
-                <span class="stat-num">&plusmn; 4.8%</span>
-                <span class="stat-text">Mean Depth Residual</span>
               </div>
             </div>
 
@@ -1030,7 +1022,7 @@
                   <div class="tbl-sub">System 2 Cognitive Substrate</div>
                 </td>
                 <td>Cognitive Router + Pydantic v2</td>
-                <td>Cloud Execution (Zero Data Retention)</td>
+                <td>Cloud Execution</td>
                 <td><span class="badge-latency">1.24 s</span></td>
                 <td>Validated Pydantic CAP Directives</td>
                 <td><span class="status-pill status-green">Active (Production)</span></td>
@@ -1065,7 +1057,7 @@
         </ul>
 
         <div class="cta-buttons">
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn-primary-lg">
+          <a href="https://github.com/opensourcecodedesigner/cyclone" target="_blank" rel="noopener noreferrer" class="btn-primary-lg">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
             </svg>

@@ -110,40 +110,81 @@
 
   function animateCounter(el) {
     if (el.dataset.hasAnimated === 'true') return;
-    el.dataset.hasAnimated = 'true';
 
-    const targetVal = parseFloat(el.getAttribute('data-counter'));
-    const decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
-    const suffix = el.getAttribute('data-suffix') || '';
-    const prefix = el.getAttribute('data-prefix') || '';
+    // Cache the verified static fallback text from the HTML node
+    const originalText = el.textContent.trim();
+
+    // Read target value: prefer data-counter attribute, or parse directly from hardcoded HTML text node
+    let targetVal = parseFloat(el.getAttribute('data-counter'));
+    if (isNaN(targetVal)) {
+      const match = originalText.match(/[-+]?[0-9]*\.?[0-9]+/);
+      if (match) targetVal = parseFloat(match[0]);
+    }
 
     if (isNaN(targetVal)) return;
 
+    el.dataset.hasAnimated = 'true';
+
+    // Parse decimal precision: prioritize data-decimals, fallback to detecting from target or text node
+    let decimals = el.hasAttribute('data-decimals')
+      ? parseInt(el.getAttribute('data-decimals'), 10)
+      : 0;
+    if (isNaN(decimals) || !el.hasAttribute('data-decimals')) {
+      const decMatch = originalText.match(/\.([0-9]+)/);
+      decimals = decMatch ? decMatch[1].length : 0;
+    }
+
+    // Determine suffix and prefix: prioritize attributes, fallback to extracting from text
+    let suffix = el.getAttribute('data-suffix');
+    if (suffix === null) {
+      const sufMatch = originalText.match(/[^0-9.]*$/);
+      suffix = sufMatch ? sufMatch[0] : '';
+    }
+
+    let prefix = el.getAttribute('data-prefix');
+    if (prefix === null) {
+      const preMatch = originalText.match(/^[^0-9.]*/);
+      prefix = preMatch ? preMatch[0] : '';
+    }
+
+    // Respect prefers-reduced-motion
     if (prefersReducedMotion) {
       el.textContent = `${prefix}${targetVal.toFixed(decimals)}${suffix}`;
       return;
     }
 
-    const duration = 1800; // ms
-    let startTime = null;
+    try {
+      const duration = 1800; // ms
+      let startTime = null;
 
-    function step(timestamp) {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeOutQuart(progress);
-      const currentVal = easedProgress * targetVal;
+      function step(timestamp) {
+        try {
+          if (!startTime) startTime = timestamp;
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const easedProgress = easeOutQuart(progress);
+          const currentVal = easedProgress * targetVal;
 
-      el.textContent = `${prefix}${currentVal.toFixed(decimals)}${suffix}`;
+          el.textContent = `${prefix}${currentVal.toFixed(decimals)}${suffix}`;
 
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      } else {
-        el.textContent = `${prefix}${targetVal.toFixed(decimals)}${suffix}`;
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          } else {
+            el.textContent = `${prefix}${targetVal.toFixed(decimals)}${suffix}`;
+          }
+        } catch (stepErr) {
+          // If frame update is interrupted or fails, restore static verified HTML fallback
+          el.textContent = originalText;
+        }
       }
-    }
 
-    requestAnimationFrame(step);
+      // Initialize animation from 0 up to verified target value
+      el.textContent = `${prefix}${(0).toFixed(decimals)}${suffix}`;
+      requestAnimationFrame(step);
+    } catch (err) {
+      // Fall back immediately to hardcoded static text if animation initialization fails
+      el.textContent = originalText;
+    }
   }
 
   /* ==========================================================================
