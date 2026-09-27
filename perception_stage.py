@@ -47,8 +47,6 @@ TILE_SAMPLE_FILE = os.path.join(CACHE_DIR, "sentinel_fani_sample_tile.npy")
 
 # Local V-JEPA 2 repository path (avoids GitHub download, fixes localhost:8300 URL bug)
 VJEPA2_LOCAL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vjepa2")
-# Directory for real satellite imagery (.npy or .tif GeoTIFF files)
-SATELLITE_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "satellite_data")
 
 def get_system_gpu_telemetry() -> dict:
     """Queries NVIDIA-SMI for RTX 4050 6GB VRAM utilization metrics."""
@@ -155,34 +153,24 @@ def load_vjepa2_vit_large(device_str: str = "auto") -> tuple:
 # =============================================================================
 def get_sentinel_tile(tile_path: str = None) -> torch.Tensor:
     """
-    Ingests satellite data from one of three sources (in priority order):
-    1. Explicit tile_path argument (.npy or .tif file)
-    2. Real satellite imagery from satellite_data/ directory (.npy or .tif)
-    3. Synthesized SAR coastal tile clip (deterministic fallback)
+    Ingests satellite data for V-JEPA 2 perception inference.
+    Default: Deterministic synthesized Sentinel-1 SAR coastal tile clip (Fani seed 20190503).
     Shape: [1, 3, 16, 224, 224] (Batch, Channels, Temporal Frames, Height, Width).
     """
     os.makedirs(CACHE_DIR, exist_ok=True)
+    tensor = None
     data = None
-    source_label = "synthetic"
+    source_label = "synthetic (Fani seed 20190503)"
 
-    # Priority 1: Explicit path argument
+    # Priority 1: Explicit path argument if provided
     if tile_path and os.path.exists(tile_path):
-        data = _load_satellite_file(tile_path)
-        if data is not None:
-            source_label = f"explicit: {os.path.basename(tile_path)}"
+        if os.path.isfile(tile_path):
+            data = _load_satellite_file(tile_path)
+            if data is not None:
+                source_label = f"explicit file: {os.path.basename(tile_path)}"
 
-    # Priority 2: Real satellite data directory
-    if data is None and os.path.isdir(SATELLITE_DATA_DIR):
-        for fname in sorted(os.listdir(SATELLITE_DATA_DIR)):
-            fpath = os.path.join(SATELLITE_DATA_DIR, fname)
-            if fname.endswith((".npy", ".tif", ".tiff")):
-                data = _load_satellite_file(fpath)
-                if data is not None:
-                    source_label = f"satellite_data/{fname}"
-                    break
-
-    # Priority 3: Synthesized SAR coastal tile (deterministic fallback)
-    if data is None:
+    # Default / Baseline: Synthesized Sentinel-1 SAR coastal proxy tile (audited deterministic baseline)
+    if tensor is None and data is None:
         np.random.seed(20190503)  # Cyclone Fani landfall seed
         data = np.random.randn(3, 16, 224, 224).astype(np.float32)
         # Inject coastal gradient and high-saturation water body (low backscatter in SAR)
@@ -191,15 +179,14 @@ def get_sentinel_tile(tile_path: str = None) -> torch.Tensor:
             data[1, t, 112:, :] += 0.9  # Saturated coastal marsh vegetation
             data[2, t, :, :]    += 1.2  # Dense cloud optical thickness from cyclone eyewall
         np.save(TILE_SAMPLE_FILE, data)
-        source_label = "synthetic (Fani seed 20190503)"
+        source_label = "synthetic Sentinel-1 SAR proxy (Fani seed 20190503)"
 
     print(f"   -> Satellite tile source: {source_label}")
-    print(f"   -> Raw data shape: {data.shape}")
 
-    # Normalize to [3, 16, 224, 224] if needed
-    data = _normalize_tile_shape(data)
+    if tensor is None:
+        data = _normalize_tile_shape(data)
+        tensor = torch.from_numpy(data).unsqueeze(0)  # [1, 3, 16, 224, 224]
 
-    tensor = torch.from_numpy(data).unsqueeze(0)  # [1, 3, 16, 224, 224]
     print(f"   -> Input tensor shape: {list(tensor.shape)}")
     return tensor
 
@@ -211,12 +198,22 @@ def _load_satellite_file(fpath: str):
             return np.load(fpath).astype(np.float32)
         elif fpath.endswith((".tif", ".tiff")):
             try:
-                import rasterio
-                with rasterio.open(fpath) as src:
-                    return src.read().astype(np.float32)  # [C, H, W]
-            except ImportError:
-                print(f"   -> rasterio not installed, cannot load GeoTIFF: {fpath}")
-                return None
+                from PIL import Image
+                img = Image.open(fpath)
+                arr = np.array(img, dtype=np.float32)
+                if arr.ndim == 2:
+                    return np.stack([arr, arr, arr], axis=0)
+                elif arr.ndim == 3 and arr.shape[-1] in (1, 3, 4):
+                    return np.transpose(arr, (2, 0, 1))[:3]
+                return arr
+            except Exception:
+                try:
+                    import rasterio
+                    with rasterio.open(fpath) as src:
+                        return src.read().astype(np.float32)  # [C, H, W]
+                except ImportError:
+                    print(f"   -> rasterio/PIL not available to load GeoTIFF: {fpath}")
+                    return None
     except Exception as e:
         print(f"   -> Failed to load {fpath}: {e}")
     return None
@@ -281,9 +278,14 @@ def _crop_or_pad_2d(data: np.ndarray, target_h: int, target_w: int) -> np.ndarra
 def extract_vjepa2_features(encoder, device, tile_tensor: torch.Tensor) -> dict:
     """
     Passes satellite clip through V-JEPA 2 ViT-L and projects latent embeddings
-    (1568 x 1024) into operational hydrodynamic coefficients.
+    (1568 x 1024) into operational hydrodynamic coefficients and 2D parameter grids.
+    Supports input tensors of either [B, C, 16, H, W] or [B, 16, C, H, W].
     """
     t0 = time.time()
+
+    # Accommodate both [B, 16, C, H, W] and [B, C, 16, H, W] tensor shapes
+    if tile_tensor.dim() == 5 and tile_tensor.shape[1] == 16 and tile_tensor.shape[2] == 3:
+        tile_tensor = tile_tensor.permute(0, 2, 1, 3, 4)
 
     inp = tile_tensor.half().to(device) if device.type == "cuda" else tile_tensor.to(device)
     with torch.no_grad():
@@ -299,9 +301,11 @@ def extract_vjepa2_features(encoder, device, tile_tensor: torch.Tensor) -> dict:
             sat_score = float(round(float(sat_grid.mean()), 3))
             roughness_n = float(round(float(man_grid.mean()), 4))
             friction_multiplier = float(round(1.0 + (roughness_n - 0.035) * 12.0, 3))
+            friction_multiplier_grid = (1.0 + (man_grid - 0.035) * 12.0).round(4)
             cloud_score = float(round(min(1.0, 0.70 + float(sat_score) * 0.20), 3))
             saturation_grid_list = sat_grid.round(4).tolist()
             manning_grid_list = man_grid.round(5).tolist()
+            friction_grid_list = friction_multiplier_grid.tolist()
             projection_method = "ParameterProjectionHead (Calibrated PyTorch CNN)"
         except Exception as e:
             emb_mean = features.mean(dim=1).squeeze(0).cpu().float().numpy()
@@ -312,6 +316,7 @@ def extract_vjepa2_features(encoder, device, tile_tensor: torch.Tensor) -> dict:
             friction_multiplier = float(round(1.0 + (roughness_n - 0.035) * 12.0, 3))
             saturation_grid_list = None
             manning_grid_list = None
+            friction_grid_list = None
             projection_method = f"Heuristic Slicing Fallback ({e})"
 
     latency_ms = round((time.time() - t0) * 1000, 2)
@@ -335,7 +340,8 @@ def extract_vjepa2_features(encoder, device, tile_tensor: torch.Tensor) -> dict:
             "effective_friction_multiplier": friction_multiplier,
             "soil_infiltration_capacity_pct": round((1.0 - sat_score) * 100, 1),
             "saturation_grid": saturation_grid_list,
-            "manning_grid": manning_grid_list
+            "manning_grid": manning_grid_list,
+            "friction_multiplier_grid": friction_grid_list
         },
         "performance": {
             "device": f"{device} ({gpu_stats['device_name']})" if device.type == "cuda" else str(device),
@@ -374,6 +380,9 @@ def run_perception_stage() -> dict:
     print(f"• Surface Roughness  : n = {results['physical_telemetry']['surface_roughness_manning_n']} (Manning's Friction)")
     print(f"• Infiltration Limit : {results['physical_telemetry']['soil_infiltration_capacity_pct']}% remaining capacity")
     print(f"• Friction Vector    : {results['physical_telemetry']['effective_friction_multiplier']}x flow impedance")
+    if results['physical_telemetry'].get('friction_multiplier_grid') is not None:
+        f_grid_np = np.array(results['physical_telemetry']['friction_multiplier_grid'])
+        print(f"• Friction Grid (2D) : [{f_grid_np.shape[0]}x{f_grid_np.shape[1]}] min={f_grid_np.min():.3f}, mean={f_grid_np.mean():.3f}, max={f_grid_np.max():.3f}")
     print(f"• Latency per Tile   : {results['performance']['inference_latency_ms']} ms")
     if results['performance']['gpu_name']:
         print(f"• Host GPU           : {results['performance']['gpu_name']}")

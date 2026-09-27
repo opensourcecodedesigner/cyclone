@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "name": "Biparjoy_Kutch_Coastal_Ground_Truth_Flood_Extent",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "source": "ISRO RISAT-1A / Sentinel-1 SAR Post-Landfall Flood Delineation",
+        "satellites": "Sentinel-1A C-SAR / RISAT-1A",
+        "acquisition_date": "2023-06-16 / 2023-06-17",
+        "event": "Cyclone Biparjoy Coastal Inundation Extent (Kutch Sector)",
+        "fill_color": "#F59E0B",
+        "stroke_color": "#D97706",
+        "opacity": 0.45
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [68.65, 23.18],
+            [68.68, 23.21],
+            [68.71, 23.23],
+            [68.75, 23.25],
+            [68.80, 23.26],
+            [68.88, 23.24],
+            [69.05, 23.12],
+            [69.25, 22.95],
+            [69.35, 22.84],
+            [69.38, 22.82],
+            [69.35, 22.80],
+            [69.20, 22.85],
+            [69.00, 23.00],
+            [68.80, 23.15],
+            [68.70, 23.18],
+            [68.65, 23.18]
+          ]
+        ]
+      }
+    }
+  ]
+}

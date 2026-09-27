@@ -1,0 +1,163 @@
+[
+  {
+    "id": "GUJ-PWR-01",
+    "name": "Kutch Lignite Power Station (Panandhro)",
+    "type": "power_grid",
+    "x_idx": 3,
+    "y_idx": 32,
+    "lat": 23.2350,
+    "lon": 68.6880,
+    "critical_depth_m": 0.7,
+    "operational_sop": "Immediately isolate 66kV/220kV transmission busbars and trip turbines"
+  },
+  {
+    "id": "GUJ-PWR-02",
+    "name": "Mandvi Coastal Distribution Yard",
+    "type": "power_grid",
+    "x_idx": 6,
+    "y_idx": 82,
+    "lat": 22.8350,
+    "lon": 69.3550,
+    "critical_depth_m": 0.7
+  },
+  {
+    "id": "GUJ-PWR-03",
+    "name": "Naliya Thermal Switching Station",
+    "type": "power_grid",
+    "x_idx": 14,
+    "y_idx": 48,
+    "lat": 23.2550,
+    "lon": 68.8250,
+    "critical_depth_m": 0.7
+  },
+  {
+    "id": "GUJ-PWR-04",
+    "name": "Bhuj 220kV Inland Grid Substation",
+    "type": "power_grid",
+    "x_idx": 42,
+    "y_idx": 65,
+    "lat": 23.2420,
+    "lon": 69.6670,
+    "critical_depth_m": 0.7
+  },
+  {
+    "id": "GUJ-MED-01",
+    "name": "Jakhau Port Primary Health Center",
+    "type": "hospital",
+    "x_idx": 4,
+    "y_idx": 35,
+    "lat": 23.2280,
+    "lon": 68.7020,
+    "critical_depth_m": 0.4
+  },
+  {
+    "id": "GUJ-MED-02",
+    "name": "Mandvi Sub-District Hospital",
+    "type": "hospital",
+    "x_idx": 5,
+    "y_idx": 80,
+    "lat": 22.8280,
+    "lon": 69.3450,
+    "critical_depth_m": 0.4
+  },
+  {
+    "id": "GUJ-MED-03",
+    "name": "Naliya Community Health Centre",
+    "type": "hospital",
+    "x_idx": 15,
+    "y_idx": 50,
+    "lat": 23.2600,
+    "lon": 68.8350,
+    "critical_depth_m": 0.4
+  },
+  {
+    "id": "GUJ-MED-04",
+    "name": "Bhuj Civil Referral Hospital",
+    "type": "hospital",
+    "x_idx": 40,
+    "y_idx": 68,
+    "lat": 23.2500,
+    "lon": 69.6700,
+    "critical_depth_m": 0.4
+  },
+  {
+    "id": "GUJ-ROA-01",
+    "name": "Jakhau Port Approach Causeway",
+    "type": "road",
+    "x_idx": 2,
+    "y_idx": 30,
+    "lat": 23.2200,
+    "lon": 68.6920,
+    "critical_depth_m": 0.3
+  },
+  {
+    "id": "GUJ-ROA-02",
+    "name": "State Highway 45 (Mandvi-Naliya Artery)",
+    "type": "road",
+    "x_idx": 8,
+    "y_idx": 55,
+    "lat": 23.1500,
+    "lon": 68.9000,
+    "critical_depth_m": 0.3
+  },
+  {
+    "id": "GUJ-ROA-03",
+    "name": "Mandvi Port Coastal Marine Road",
+    "type": "road",
+    "x_idx": 4,
+    "y_idx": 84,
+    "lat": 22.8220,
+    "lon": 69.3600,
+    "critical_depth_m": 0.3
+  },
+  {
+    "id": "GUJ-ROA-04",
+    "name": "Kutch Salt Flats Feeder Corridor",
+    "type": "road",
+    "x_idx": 12,
+    "y_idx": 42,
+    "lat": 23.2800,
+    "lon": 68.7500,
+    "critical_depth_m": 0.3
+  },
+  {
+    "id": "GUJ-ROA-05",
+    "name": "SH-47 Inland Bhuj Evacuation Highway",
+    "type": "road",
+    "x_idx": 35,
+    "y_idx": 62,
+    "lat": 23.2200,
+    "lon": 69.4500,
+    "critical_depth_m": 0.3
+  },
+  {
+    "id": "GUJ-LOG-01",
+    "name": "Jakhau Fisheries Terminal Logistics Depot",
+    "type": "logistics",
+    "x_idx": 5,
+    "y_idx": 36,
+    "lat": 23.2320,
+    "lon": 68.7050,
+    "critical_depth_m": 0.5
+  },
+  {
+    "id": "GUJ-SHL-01",
+    "name": "Kutch Coastal Multipurpose Shelter (Naliya)",
+    "type": "school_shelter",
+    "x_idx": 16,
+    "y_idx": 52,
+    "lat": 23.2650,
+    "lon": 68.8400,
+    "critical_depth_m": 0.5
+  },
+  {
+    "id": "GUJ-WAT-01",
+    "name": "Mandvi Coastal Desalination Plant",
+    "type": "water_treatment",
+    "x_idx": 7,
+    "y_idx": 85,
+    "lat": 22.8400,
+    "lon": 69.3300,
+    "critical_depth_m": 0.5
+  }
+]

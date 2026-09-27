@@ -286,9 +286,9 @@ function normalize_coordinate(idx::Int, dim_size::Int, is_zero_indexed::Bool)::I
 end
 
 # =============================================================================
-# 7. REST API ENDPOINT: POST /simulate_surge
+# 7. REST API ENDPOINTS: POST /simulate_surge & POST /simulate
 # =============================================================================
-@post "/simulate_surge" function(req::HTTP.Request)
+function handle_surge_simulation(req::HTTP.Request)
     start_time = time()
 
     # 1. Parse JSON Payload
@@ -462,6 +462,10 @@ end
             JSON3.write(Dict("error" => "Simulation execution error", "details" => sprint(showerror, err))))
     end
 end
+
+# Register simulation endpoints (supporting both /simulate_surge and /simulate)
+@post "/simulate_surge" handle_surge_simulation
+@post "/simulate" handle_surge_simulation
 
 # Healthcheck endpoint
 @get "/health" function()

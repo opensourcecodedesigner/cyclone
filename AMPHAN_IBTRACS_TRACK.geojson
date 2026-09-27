@@ -1,0 +1,1098 @@
+{
+  "type": "FeatureCollection",
+  "name": "AMPHAN_IBTRACS_TRACK",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            87.5,
+            9.5
+          ],
+          [
+            87.2,
+            9.5
+          ],
+          [
+            87.0,
+            9.5
+          ],
+          [
+            86.8,
+            9.5
+          ],
+          [
+            86.6,
+            9.5
+          ],
+          [
+            86.5,
+            9.6
+          ],
+          [
+            86.4,
+            9.8
+          ],
+          [
+            86.2,
+            10.1
+          ],
+          [
+            86.1,
+            10.3
+          ],
+          [
+            86.1,
+            10.5
+          ],
+          [
+            86.2,
+            10.6
+          ],
+          [
+            86.1,
+            10.8
+          ],
+          [
+            86.1,
+            10.9
+          ],
+          [
+            86.1,
+            11.1
+          ],
+          [
+            86.1,
+            11.2
+          ],
+          [
+            86.1,
+            11.3
+          ],
+          [
+            86.2,
+            11.5
+          ],
+          [
+            86.2,
+            11.6
+          ],
+          [
+            86.2,
+            11.9
+          ],
+          [
+            86.4,
+            12.5
+          ],
+          [
+            86.4,
+            12.5
+          ],
+          [
+            86.5,
+            12.9
+          ],
+          [
+            86.4,
+            13.2
+          ],
+          [
+            86.2,
+            13.3
+          ],
+          [
+            86.2,
+            13.4
+          ],
+          [
+            86.2,
+            13.7
+          ],
+          [
+            86.4,
+            14.1
+          ],
+          [
+            86.5,
+            14.5
+          ],
+          [
+            86.6,
+            14.9
+          ],
+          [
+            86.7,
+            15.2
+          ],
+          [
+            86.8,
+            15.6
+          ],
+          [
+            86.9,
+            16.0
+          ],
+          [
+            87.0,
+            16.5
+          ],
+          [
+            87.0,
+            16.9
+          ],
+          [
+            87.1,
+            17.3
+          ],
+          [
+            87.1,
+            17.9
+          ],
+          [
+            87.2,
+            18.3
+          ],
+          [
+            87.3,
+            18.7
+          ],
+          [
+            87.5,
+            19.2
+          ],
+          [
+            87.7,
+            19.8
+          ],
+          [
+            88.0,
+            20.6
+          ],
+          [
+            88.1,
+            21.4
+          ],
+          [
+            88.4,
+            22.1
+          ],
+          [
+            88.6,
+            22.8
+          ],
+          [
+            89.1,
+            23.5
+          ],
+          [
+            89.3,
+            24.3
+          ],
+          [
+            89.6,
+            24.6
+          ],
+          [
+            89.9,
+            25.1
+          ],
+          [
+            90.1,
+            25.4
+          ],
+          [
+            89.6,
+            25.2
+          ],
+          [
+            89.6,
+            25.4
+          ]
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "SEASON": "2020",
+        "LANDFALL": "Digha / Bakkhali / Sundarbans, West Bengal",
+        "TOTAL_TRACK_POINTS": 51
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.5,
+          9.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-15 06:00:00",
+        "WMO_WIND": null,
+        "WMO_PRES": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.2,
+          9.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-15 09:00:00",
+        "WMO_WIND": null,
+        "WMO_PRES": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.0,
+          9.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-15 12:00:00",
+        "WMO_WIND": null,
+        "WMO_PRES": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.8,
+          9.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-15 15:00:00",
+        "WMO_WIND": null,
+        "WMO_PRES": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.6,
+          9.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-15 18:00:00",
+        "WMO_WIND": null,
+        "WMO_PRES": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.5,
+          9.6
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-15 21:00:00",
+        "WMO_WIND": null,
+        "WMO_PRES": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.4,
+          9.8
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-16 00:00:00",
+        "WMO_WIND": 25,
+        "WMO_PRES": 1000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.2,
+          10.1
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-16 03:00:00",
+        "WMO_WIND": 25,
+        "WMO_PRES": 1000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.1,
+          10.3
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-16 06:00:00",
+        "WMO_WIND": 25,
+        "WMO_PRES": 1000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.1,
+          10.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-16 09:00:00",
+        "WMO_WIND": 30,
+        "WMO_PRES": 998
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.2,
+          10.6
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-16 12:00:00",
+        "WMO_WIND": 35,
+        "WMO_PRES": 996
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.1,
+          10.8
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-16 15:00:00",
+        "WMO_WIND": 40,
+        "WMO_PRES": 995
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.1,
+          10.9
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-16 18:00:00",
+        "WMO_WIND": 40,
+        "WMO_PRES": 995
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.1,
+          11.1
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-16 21:00:00",
+        "WMO_WIND": 45,
+        "WMO_PRES": 994
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.1,
+          11.2
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-17 00:00:00",
+        "WMO_WIND": 45,
+        "WMO_PRES": 993
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.1,
+          11.3
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-17 03:00:00",
+        "WMO_WIND": 50,
+        "WMO_PRES": 990
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.2,
+          11.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-17 06:00:00",
+        "WMO_WIND": 55,
+        "WMO_PRES": 988
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.2,
+          11.6
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-17 09:00:00",
+        "WMO_WIND": 65,
+        "WMO_PRES": 980
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.2,
+          11.9
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-17 12:00:00",
+        "WMO_WIND": 70,
+        "WMO_PRES": 978
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.4,
+          12.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-17 15:00:00",
+        "WMO_WIND": 75,
+        "WMO_PRES": 972
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.4,
+          12.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-17 18:00:00",
+        "WMO_WIND": 80,
+        "WMO_PRES": 970
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.5,
+          12.9
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-17 21:00:00",
+        "WMO_WIND": 90,
+        "WMO_PRES": 962
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.4,
+          13.2
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-18 00:00:00",
+        "WMO_WIND": 100,
+        "WMO_PRES": 952
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.2,
+          13.3
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-18 03:00:00",
+        "WMO_WIND": 115,
+        "WMO_PRES": 936
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.2,
+          13.4
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-18 06:00:00",
+        "WMO_WIND": 120,
+        "WMO_PRES": 930
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.2,
+          13.7
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-18 09:00:00",
+        "WMO_WIND": 120,
+        "WMO_PRES": 930
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.4,
+          14.1
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-18 12:00:00",
+        "WMO_WIND": 125,
+        "WMO_PRES": 926
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.5,
+          14.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-18 15:00:00",
+        "WMO_WIND": 125,
+        "WMO_PRES": 926
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.6,
+          14.9
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-18 18:00:00",
+        "WMO_WIND": 130,
+        "WMO_PRES": 920
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.7,
+          15.2
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-18 21:00:00",
+        "WMO_WIND": 130,
+        "WMO_PRES": 920
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.8,
+          15.6
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-19 00:00:00",
+        "WMO_WIND": 125,
+        "WMO_PRES": 926
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.9,
+          16.0
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-19 03:00:00",
+        "WMO_WIND": 120,
+        "WMO_PRES": 930
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.0,
+          16.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-19 06:00:00",
+        "WMO_WIND": 115,
+        "WMO_PRES": 936
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.0,
+          16.9
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-19 09:00:00",
+        "WMO_WIND": 110,
+        "WMO_PRES": 942
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.1,
+          17.3
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-19 12:00:00",
+        "WMO_WIND": 105,
+        "WMO_PRES": 946
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.1,
+          17.9
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-19 15:00:00",
+        "WMO_WIND": 100,
+        "WMO_PRES": 948
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.2,
+          18.3
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-19 18:00:00",
+        "WMO_WIND": 100,
+        "WMO_PRES": 948
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.3,
+          18.7
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-19 21:00:00",
+        "WMO_WIND": 100,
+        "WMO_PRES": 948
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.5,
+          19.2
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-20 00:00:00",
+        "WMO_WIND": 95,
+        "WMO_PRES": 952
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          87.7,
+          19.8
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-20 03:00:00",
+        "WMO_WIND": 95,
+        "WMO_PRES": 954
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.0,
+          20.6
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-20 06:00:00",
+        "WMO_WIND": 90,
+        "WMO_PRES": 956
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.1,
+          21.4
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-20 09:00:00",
+        "WMO_WIND": 90,
+        "WMO_PRES": 960
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.4,
+          22.1
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-20 12:00:00",
+        "WMO_WIND": 85,
+        "WMO_PRES": 957
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.6,
+          22.8
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-20 15:00:00",
+        "WMO_WIND": 65,
+        "WMO_PRES": 968
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          89.1,
+          23.5
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-20 18:00:00",
+        "WMO_WIND": 50,
+        "WMO_PRES": 978
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          89.3,
+          24.3
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-20 21:00:00",
+        "WMO_WIND": 45,
+        "WMO_PRES": 986
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          89.6,
+          24.6
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-21 00:00:00",
+        "WMO_WIND": 40,
+        "WMO_PRES": 988
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          89.9,
+          25.1
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-21 03:00:00",
+        "WMO_WIND": 35,
+        "WMO_PRES": 990
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.1,
+          25.4
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-21 06:00:00",
+        "WMO_WIND": 30,
+        "WMO_PRES": 992
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          89.6,
+          25.2
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-21 09:00:00",
+        "WMO_WIND": null,
+        "WMO_PRES": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          89.6,
+          25.4
+        ]
+      },
+      "properties": {
+        "SID": "2020136N10088",
+        "NAME": "AMPHAN",
+        "ISO_TIME": "2020-05-21 12:00:00",
+        "WMO_WIND": 20,
+        "WMO_PRES": 995
+      }
+    }
+  ]
+}
