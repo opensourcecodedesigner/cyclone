@@ -23,8 +23,8 @@
     "device": "cuda:0 (NVIDIA GeForce RTX 4050 Laptop GPU)",
     "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
     "vram_total_mb": 6141.0,
-    "vram_used_mb": 4026.0,
-    "vram_free_mb": 1895.0,
-    "inference_latency_ms": 448.12
+    "vram_used_mb": 2047.0,
+    "vram_free_mb": 3874.0,
+    "inference_latency_ms": 898.34
   }
 }

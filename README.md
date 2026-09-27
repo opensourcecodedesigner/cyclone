@@ -131,7 +131,7 @@ flowchart TD
 ### 2. The Physics Backend: Julia Cellular Automata Engine
 * **Stack:** Julia 1.10+, `Oxygen.jl` REST framework, `HTTP.jl`, `JSON3.jl`, `LinearAlgebra`.
 * **Port:** `8080` (`/simulate_surge`, `/health`).
-* **Execution Latency:** $\sim 1800 - 2200 \text{ ms}$ for $100 \times 100$ elevation matrices across multiple CPU threads.
+* **Execution Latency:** $\sim 2 - 5 \text{ ms}$ internal CA kernel compute time; $\sim 18 \text{ ms}$ total HTTP roundtrip over IPv4 loopback.
 * **Hydrodynamic Formulation:**
   AEGIS executes a gravity-driven 2D storm surge flood propagation model over high-resolution Digital Elevation Models (DEM) using a **Cellular Automata (CA)** diffusive routing scheme with strict mass conservation:
 
@@ -148,6 +148,11 @@ flowchart TD
 
   $$S_{\text{eff}} = S_{\text{base}} + \Delta S_{\text{wind}} = S_{\text{base}} + (V_{\text{km/h}} > 100 ? (V_{\text{km/h}} - 100) \times 0.015 : 0.0)$$
 
+* **Microservice Reliability & Loopback Optimization:**
+  * **Direct IPv4 Loopback (`127.0.0.1`):** Completely eliminates the 2.04-second Windows IPv6 (`::1`) DNS fallback penalty incurred by `localhost` requests against IPv4-only Oxygen listeners.
+  * **First-Call JIT Absorption (`45.0s Timeout`):** Extends the read timeout from `25.0s` to `45.0s` with dedicated `ReadTimeout` exception trapping, smoothly absorbing Julia's initial multi-threaded JIT compilation pass under `--pkgimages=no`.
+  * **Startup Health-Check Guard:** Proactively queries `GET /health` before simulation dispatch. The Streamlit console locks execution and displays an intuitive *“Julia Engine Starting...”* state until the microservice is fully responsive.
+
 ---
 
 ### 3. Automated Parametric Insurance Liquidity Settlement Engine
@@ -161,7 +166,12 @@ Parametric insurance enables instantaneous, automated catastrophe liquidity payo
 | **Secondary Assets** | $0.30\text{m} \le h < 1.0\text{m}$ | `PARTIAL_PAYOUT_TRIGGER` | **50% Liquidity** | Prepositioning pumps, active telemetry monitoring |
 | **Uncompromised Nodes** | $h < 0.30 \text{ m}$ | `NO_TRIGGER` | **0% (Safe)** | Corridors verified open for emergency transit |
 
-* **Audit Trail Integration:** Evaluated parametric triggers are embedded directly into both the machine-readable CAP alert and dedicated UI settlement cards.
+* **Expanded Puri Coastal Corridor Inventory (16 Critical GIS Nodes):**
+  AEGIS geocodes 16 real-world critical infrastructure assets across the Puri, Odisha coastal grid ($19.74^\circ\text{N} - 19.86^\circ\text{N}$, $85.66^\circ\text{E} - 85.87^\circ\text{E}$) spanning 4 distinct coastal exposure tiers:
+  * **4 Power Grid Nodes:** Shoreline switchyards (`samuka_beach_electrical_substation`, `balukhand_transformer_yard`), municipal switching stations (`puri_town_33kv_switching_station`), and elevated inland grid hubs (`malatipatpur_grid_substation`).
+  * **4 Medical Facilities:** Beachfront urgent care clinics (`swargadwar_emergency_clinic`), coastal village shelters (`red_cross_cyclone_shelter_pentakota`), referral district hospitals (`puri_district_headquarters_hospital`), and high-ground clinics (`gopabandhu_ayurvedic_hospital`).
+  * **5 Arterial Corridors:** Oceanfront transit routes (`swargadwar_coastal_boulevard`, `puri_konark_marine_drive_nh316`), central urban spines (`grand_road_bada_danda_corridor`), coastal lagoon feeders (`chilika_inlet_coastal_feeder`), and elevated expressways (`nh316_bhubaneswar_inland_artery`).
+  * **3 Community Relief Assets:** Emergency logistics hubs (`mangalahat_food_grain_depot`), reinforced school shelters (`badasankha_multipurpose_cyclone_shelter`), and municipal drinking water plants (`puri_water_treatment_plant_chandanpur`).
 
 ---
 
@@ -179,7 +189,7 @@ Parametric insurance enables instantaneous, automated catastrophe liquidity payo
 * **LlamaIndex Vector Store Architecture:**
   * **Embedding Model:** Local `BAAI/bge-small-en-v1.5` (384-dimensional dense vectors via `llama_index.embeddings.huggingface`), operating completely offline with zero OpenAI key dependency.
   * **Knowledge Base:** Vectorizes municipal disaster protocols in `knowledge_base/` (`visakhapatnam_sop.md`, `vddmp_2026.txt`).
-  * **Retrieval Dynamics:** Semantic similarity search (`similarity_top_k=2`) directly maps affected critical infrastructure nodes (e.g., `power_substation_alpha`, `district_hospital_central`) to exact emergency protocols (220kV transformer cutoffs, Level 3 vertical ICU evacuation, LMO tank securing, 104.4 MHz emergency radio channels).
+  * **Retrieval Dynamics:** Semantic similarity search (`similarity_top_k=2`) directly maps affected critical infrastructure nodes (e.g., `samuka_beach_electrical_substation`, `puri_district_headquarters_hospital`) to exact emergency protocols (220kV transformer cutoffs, Level 3 vertical ICU evacuation, LMO tank securing, 104.4 MHz emergency radio channels).
   * **Session Caching:** Vector store is indexed once into memory and cached via Streamlit `@st.cache_resource`, ensuring sub-millisecond retrieval latency during interactive runs.
 * **Resilient AI Dispatch Architecture:**
   * **Dynamic Model Routing:** Uses `gemini-3.1-flash-lite` (with automatic candidate fallback to `gemini-3.5-flash-lite`), dynamically reflecting the active engine across the UI.
@@ -197,10 +207,11 @@ Parametric insurance enables instantaneous, automated catastrophe liquidity payo
 * **Design Philosophy:** **Cartographic Noir** — an ultra-dark slate palette (`#0E1117`), structured cards (`#161B22`), muted cyan data readouts, and vivid hazard indicators (emerald safe, amber warning, crimson critical).
 * **Dual-Tab Interface:**
   1. 🚨 **LIVE INCIDENT OPERATIONS**:
-     * Interactive hydrodynamic sliders (Surge $1.0 - 10.0\text{m}$, Wind $80 - 220\text{kts}$, Iterations $50 - 300$).
-     * One-click reactive scenario presets: **Cat 3 (3.2m)** and **Fani Cat 4 (4.2m)** bound directly to session state.
-     * Split view (60/40): High-resolution **Esri World Imagery** satellite map with live SVG hazard pins + **System 2 AI CAP Dispatch Console**.
-     * Real-time Parametric Insurance Settlement ledger cards and infrastructure matrix table.
+     * **Interactive Hydrodynamic Controls:** Surge $1.0 - 10.0\text{m}$, Wind $80 - 220\text{kts}$, Iterations $50 - 300$, and instant presets (**Cat 3 (3.2m)**, **Fani Cat 4 (4.2m)**).
+     * **Real-Time Engine Health Guard:** Live status badge (`🟢 JULIA HPC ENGINE: READY` / `⏳ Julia Engine Starting / Offline`) with auto-disabled execution trigger during cold-start compilation.
+     * **Interactive Map Clustering:** Centered on the Puri coastal grid (`19.810°N, 85.815°E`) with Leaflet `MarkerCluster` (`disableClusteringAtZoom: 14`) that smoothly groups dense urban assets while preserving individual color-coded hazard markers, hover tooltips, and detailed modal popups when zoomed in.
+     * **Scrollable Parametric Ledger Card:** Integrated monospace liquidity card (`max-height: 220px; overflow-y: auto;`) with live status counts (`● Full`, `● Partial`, `● Safe`).
+     * **Scrollable Telemetry Assessment Table:** Comprehensive matrix (`height=420`) displaying Category badges (`⚡ Power Grid`, `🏥 Medical Facility`, `🛣️ Arterial / Evac Route`), grid cell coordinates `(X, Y)`, flood depths, vulnerability scores, and insurance triggers.
   2. 📊 **MODEL VALIDATION (CYCLONE FANI)**:
      * Dual spatial GeoJSON overlay centered on the Puri landfall zone: AEGIS 2D Cellular Automata simulation (cyan) overlaid on Copernicus EMSR357 satellite radar delineation (amber).
      * Live empirical fit scorecards: IoU, Spatial Overlap/Recall, and Precision.
@@ -355,9 +366,9 @@ Once initialized, the service outputs:
 ===========================================================================
 ```
 
-Verify server health:
+Verify server health via IPv4 loopback:
 ```powershell
-curl http://localhost:8080/health
+curl http://127.0.0.1:8080/health
 # Returns: {"status":"online","service":"Cyclone Surge Inundation Physics Engine"}
 ```
 
@@ -377,9 +388,10 @@ streamlit run app.py
 
 Open `http://localhost:8501` in your browser:
 * **🚨 LIVE INCIDENT OPERATIONS**:
+  * The sidebar dynamically queries `http://127.0.0.1:8080/health`. If Julia is still compiling or launching, it displays `⏳ Julia Engine Starting / Offline` and safely disables the simulation button until the microservice is ready (`🟢 JULIA HPC ENGINE: READY`).
   * Adjust surge and wind sliders or click **Fani Cat 4 (4.2m)** / **Cat 3 (3.2m)** presets.
   * *API Quota Protection*: Moving sliders or switching tabs updates `st.session_state` locally without triggering LLM calls or Julia physics.
-  * Click **🚀 EXECUTE LIVE SIMULATION** to trigger the Julia hydrodynamic simulation, parametric trigger evaluation, and resilient Gemini dispatch.
+  * Click **🚀 EXECUTE LIVE SIMULATION** to trigger the Julia hydrodynamic simulation, evaluate all 16 geocoded Puri infrastructure nodes, inspect the clustered Folium map, and review the resilient Gemini dispatch and scrollable parametric ledger.
 * **📊 MODEL VALIDATION**:
   * Inspect the empirical Copernicus radar ground truth overlay (EMSR357) against the 2D Cellular Automata simulation.
   * Dynamically bound to `backtest_metrics.json` displaying verified benchmark figures (**60.6% IoU**, **81.2% Overlap Recall**).
@@ -408,39 +420,46 @@ python backtest_fani.py
 ---
 
 **[CRITICAL THREAT EVALUATION]**
-Infrastructure failure imminent. Surge levels have exceeded safety thresholds across primary sectors. **Power_substation_alpha** is compromised (4.25m depth); **Coastal_highway_route1** is non-traversable (2.01m depth). **District_hospital_central** is at critical risk (0.42m depth), requiring immediate vertical escalation. **Inland_evac_route9** is confirmed as the sole viable logistics artery.
+Infrastructure failure imminent. Coastal surge breach has inundated primary littoral sectors across the Puri corridor. **samuka_beach_electrical_substation** is compromised (4.09m depth); **swargadwar_coastal_boulevard** is fully non-traversable (3.82m depth); **puri_konark_marine_drive_nh316** is breached (1.85m depth). **puri_district_headquarters_hospital** is under active flood threat (0.54m depth), requiring immediate vertical ward evacuation. Elevated inland corridors (**nh316_bhubaneswar_inland_artery**) remain intact and confirmed as primary evacuation lifelines.
 
 ---
 
 **[PARAMETRIC TRIGGER STATUS]**
-1. **power_substation_alpha**: 4.2494m depth | **STATUS: FULL_PAYOUT_TRIGGER (100%)**
-2. **district_hospital_central**: 0.4247m depth | **STATUS: PARTIAL_PAYOUT_TRIGGER (50%)**
-3. **coastal_highway_route1**: 2.0095m depth | **STATUS: FULL_PAYOUT_TRIGGER (100%)**
-4. **inland_evac_route9**: 0.0m depth | **STATUS: NO_TRIGGER (0%)**
+• samuka_beach_electrical_substation     : 4.0883m depth | STATUS: FULL_PAYOUT_TRIGGER (100%)
+• swargadwar_emergency_clinic            : 2.7410m depth | STATUS: FULL_PAYOUT_TRIGGER (100%)
+• swargadwar_coastal_boulevard           : 3.8190m depth | STATUS: FULL_PAYOUT_TRIGGER (100%)
+• puri_konark_marine_drive_nh316         : 1.8520m depth | STATUS: FULL_PAYOUT_TRIGGER (100%)
+• balukhand_transformer_yard             : 0.6193m depth | STATUS: PARTIAL_PAYOUT_TRIGGER (50%)
+• puri_district_headquarters_hospital    : 0.5408m depth | STATUS: FULL_PAYOUT_TRIGGER (100%)
+• grand_road_bada_danda_corridor         : 0.4200m depth | STATUS: PARTIAL_PAYOUT_TRIGGER (50%)
+• mangalahat_food_grain_depot            : 0.2510m depth | STATUS: NO_TRIGGER (0%)
+• badasankha_multipurpose_cyclone_shelter: 0.0400m depth | STATUS: NO_TRIGGER (0%)
+• nh316_bhubaneswar_inland_artery        : 0.0000m depth | STATUS: NO_TRIGGER (0%)
+• malatipatpur_grid_substation           : 0.0000m depth | STATUS: NO_TRIGGER (0%)
 
 ---
 
 **[MANDATORY ACTION DIRECTIVES]**
 
 *   **POWER DIVISION**: 
-    *   Execute IMMEDIATE grid de-energization of **power_substation_alpha** to prevent catastrophic flashover. 
-    *   Isolate coastal feeders 4–9; switch hospital telemetry loads to elevated inland grid. 
-    *   Deploy mobile DG sets to hospital site immediately.
+    *   Execute IMMEDIATE grid de-energization of **samuka_beach_electrical_substation** to prevent flashover. 
+    *   Isolate coastal distribution feeders; reroute critical hospital telemetry loads to elevated inland grid at **malatipatpur_grid_substation**. 
+    *   Deploy mobile emergency DG generation units immediately.
 *   **MEDICAL DIVISION**: 
-    *   Initiate emergency vertical evacuation of **district_hospital_central** patients to Level 3.
-    *   Secure LMO tanks; transition life support to UPS/Rooftop auxiliary power.
+    *   Initiate emergency vertical patient evacuation at **puri_district_headquarters_hospital** to Floor 2+.
+    *   Transition life support to auxiliary battery/rooftop generators; secure oxygen supply systems.
 *   **TRANSPORT DIVISION**: 
-    *   Enforce absolute closure of **coastal_highway_route1**. 
-    *   Divert all transit traffic to **inland_evac_route9**. 
-    *   Deploy heavy recovery assets to highway intersections.
+    *   Enforce absolute vehicular closure along **swargadwar_coastal_boulevard** and **puri_konark_marine_drive_nh316**. 
+    *   Funnel all transit and relief logistics through **nh316_bhubaneswar_inland_artery**.
+    *   Preposition heavy recovery and water-rescue assets at key bypass junctions.
 
 ---
 
 **[NDRF DEPLOYMENT]**
-*   **Mission Profile**: High-clearance amphibious casualty transit.
-*   **Target**: **district_hospital_central**.
-*   **Objective**: Extraction and transport of critical patients to inland university hospital. 
-*   **Authority**: VDDMP-2026 // Autonomous Override Active.
+*   **Mission Profile**: High-clearance amphibious transit & rapid triage extraction.
+*   **Target**: **puri_district_headquarters_hospital** & **red_cross_cyclone_shelter_pentakota**.
+*   **Objective**: Rapid casualty extraction and transport to elevated relief facilities.
+*   **Authority**: VDDMP-2026 // Autonomous Incident Override Active.
 
 **END OF DISPATCH // AEGIS COMMAND**
 ```

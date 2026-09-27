@@ -249,27 +249,76 @@ st.markdown("""
 # =============================================================================
 # 2. APPLICATION CONSTANTS & COORDINATES
 # =============================================================================
-JULIA_SERVER_URL = "http://localhost:8080/simulate_surge"
+JULIA_BASE_URL = "http://127.0.0.1:8080"
+JULIA_SERVER_URL = f"{JULIA_BASE_URL}/simulate_surge"
+JULIA_HEALTH_URL = f"{JULIA_BASE_URL}/health"
 GEMINI_MODEL = "gemini-3.1-flash-lite"
 KNOWLEDGE_BASE_DIR = "knowledge_base"
 DEFAULT_GEOJSON_PATH = "FANI_IBTRACS_TRACK.geojson"
 
-# Default Visakhapatnam Coastal Sector Coordinates for Map Rendering
+# Puri Coastal Sector Coordinates for Map Rendering (19.74°N - 19.86°N, 85.66°E - 85.87°E)
 ASSET_COORDINATES = {
-    "power_substation_alpha": (17.728, 83.315),
-    "district_hospital_central": (17.712, 83.322),
-    "coastal_highway_route1": (17.735, 83.335),
-    "inland_evac_route9": (17.698, 83.285)
+    # Power Grid Nodes
+    "samuka_beach_electrical_substation": (19.7820, 85.7980),
+    "balukhand_transformer_yard": (19.8240, 85.8620),
+    "puri_town_33kv_switching_station": (19.8020, 85.8190),
+    "malatipatpur_grid_substation": (19.8550, 85.8350),
+
+    # Medical Facilities & Shelters
+    "swargadwar_emergency_clinic": (19.7940, 85.8140),
+    "red_cross_cyclone_shelter_pentakota": (19.8000, 85.8420),
+    "puri_district_headquarters_hospital": (19.8080, 85.8240),
+    "gopabandhu_ayurvedic_hospital": (19.8260, 85.8180),
+
+    # Arterial Roads & Evacuation Corridors
+    "swargadwar_coastal_boulevard": (19.7900, 85.8100),
+    "puri_konark_marine_drive_nh316": (19.8150, 85.8600),
+    "grand_road_bada_danda_corridor": (19.8060, 85.8265),
+    "chilika_inlet_coastal_feeder": (19.7400, 85.6600),
+    "nh316_bhubaneswar_inland_artery": (19.8480, 85.8300),
+
+    # Additional Critical Community Assets
+    "mangalahat_food_grain_depot": (19.8120, 85.8080),
+    "badasankha_multipurpose_cyclone_shelter": (19.8180, 85.8320),
+    "puri_water_treatment_plant_chandanpur": (19.8400, 85.8050),
+
+    # Backward-compatible legacy aliases
+    "power_substation_alpha": (19.7820, 85.7980),
+    "district_hospital_central": (19.8080, 85.8240),
+    "coastal_highway_route1": (19.8150, 85.8600),
+    "inland_evac_route9": (19.8480, 85.8300)
 }
 
 # Live-scenario infrastructure nodes with grid positions within the Julia 100x100
-# flood propagation zone. Coastline = row 1; flood dissipates by ~row 30 at
-# 100 iterations / 0.20 diffusion rate. Assets must be near-coast to register depth.
+# flood propagation zone across the Puri coastal corridor.
+# Coastline = row 1; flood dissipates by ~row 25-30 at 100-156 iterations.
+# x_idx = distance from coastline (1 = oceanfront, 100 = deep inland).
+# y_idx = lateral position along the coast (1 = southwest/Chilika, 100 = northeast/Konark).
+# Spread across 4 distinct distance tiers for genuine variation (Flooded / At Risk / Safe).
 LIVE_INFRASTRUCTURE_NODES = [
-    {"id": "power_substation_alpha",    "type": "power_grid", "x_idx": 3,  "y_idx": 25},
-    {"id": "district_hospital_central", "type": "hospital",   "x_idx": 8,  "y_idx": 50},
-    {"id": "coastal_highway_route1",    "type": "road",       "x_idx": 5,  "y_idx": 70},
-    {"id": "inland_evac_route9",        "type": "road",       "x_idx": 20, "y_idx": 85}
+    # 1. Power Grid Nodes (4 assets: shoreline substation to elevated inland grid)
+    {"id": "samuka_beach_electrical_substation", "type": "power_grid",      "x_idx": 3,  "y_idx": 28},
+    {"id": "balukhand_transformer_yard",        "type": "power_grid",      "x_idx": 7,  "y_idx": 68},
+    {"id": "puri_town_33kv_switching_station",   "type": "power_grid",      "x_idx": 11, "y_idx": 48},
+    {"id": "malatipatpur_grid_substation",       "type": "power_grid",      "x_idx": 38, "y_idx": 52},
+
+    # 2. Medical Facilities & Shelters (4 assets: beachfront clinic to inland district hospital)
+    {"id": "swargadwar_emergency_clinic",        "type": "hospital",        "x_idx": 4,  "y_idx": 44},
+    {"id": "red_cross_cyclone_shelter_pentakota","type": "hospital",        "x_idx": 6,  "y_idx": 62},
+    {"id": "puri_district_headquarters_hospital","type": "hospital",        "x_idx": 9,  "y_idx": 50},
+    {"id": "gopabandhu_ayurvedic_hospital",      "type": "hospital",        "x_idx": 22, "y_idx": 46},
+
+    # 3. Arterial Roads & Evacuation Routes (5 assets: seawall boulevard to dry 4-lane highway)
+    {"id": "swargadwar_coastal_boulevard",       "type": "road",            "x_idx": 2,  "y_idx": 40},
+    {"id": "puri_konark_marine_drive_nh316",     "type": "road",            "x_idx": 5,  "y_idx": 72},
+    {"id": "grand_road_bada_danda_corridor",     "type": "road",            "x_idx": 10, "y_idx": 53},
+    {"id": "chilika_inlet_coastal_feeder",       "type": "road",            "x_idx": 15, "y_idx": 14},
+    {"id": "nh316_bhubaneswar_inland_artery",    "type": "road",            "x_idx": 34, "y_idx": 50},
+
+    # 4. Critical Community Assets (3 assets: relief logistics, shelter school, water treatment)
+    {"id": "mangalahat_food_grain_depot",        "type": "logistics",       "x_idx": 12, "y_idx": 42},
+    {"id": "badasankha_multipurpose_cyclone_shelter", "type": "school_shelter", "x_idx": 16, "y_idx": 54},
+    {"id": "puri_water_treatment_plant_chandanpur",   "type": "water_treatment", "x_idx": 28, "y_idx": 42}
 ]
 
 # =============================================================================
@@ -340,16 +389,51 @@ def get_vjepa2_perception_data() -> dict:
     }
 
 
+def check_julia_health(url: str = JULIA_HEALTH_URL, timeout: float = 1.0) -> tuple:
+    """
+    Checks responsiveness of the Julia Oxygen.jl physics microservice /health endpoint.
+    Returns (is_online: bool, status_message: str).
+    """
+    try:
+        r = requests.get(url, timeout=timeout)
+        if r.status_code == 200:
+            return True, "ONLINE"
+        return False, f"HTTP_{r.status_code}"
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return False, "OFFLINE"
+    except Exception:
+        return False, "OFFLINE"
+
+
 def call_julia_physics_engine(
     surge_height: float,
     wind_speed_knots: float,
     iterations: int = 100,
-    vjepa2_perception: dict = None
+    vjepa2_perception: dict = None,
+    timeout: float = 45.0
 ) -> tuple:
     """
     Sends hydrodynamic surge, wind, and V-JEPA 2 terrain telemetry to the local Julia Oxygen.jl server.
+    Includes startup health-check retries and 45.0s timeout to gracefully absorb cold-start JIT compilation.
     Returns (success: bool, data_or_error: dict/str, elapsed_ms: float)
     """
+    # 1. Startup health-check retry: if engine is still launching, poll /health briefly
+    is_online, _ = check_julia_health(timeout=1.0)
+    if not is_online:
+        for _ in range(3):
+            time.sleep(1.0)
+            is_online, _ = check_julia_health(timeout=1.0)
+            if is_online:
+                break
+
+    if not is_online:
+        err_msg = (
+            "Cannot connect to the Julia Physics Microservice at http://127.0.0.1:8080.\n\n"
+            "Ensure the server is running in a terminal:\n"
+            "  julia --project=. --threads=auto server.jl"
+        )
+        return False, err_msg, 0.0
+
     payload = {
         "surge_height": float(surge_height),
         "wind_speed": float(wind_speed_knots * 1.852), # convert knots to km/h
@@ -361,7 +445,7 @@ def call_julia_physics_engine(
 
     t0 = time.time()
     try:
-        response = requests.post(JULIA_SERVER_URL, json=payload, timeout=25.0)
+        response = requests.post(JULIA_SERVER_URL, json=payload, timeout=timeout)
         elapsed_ms = round((time.time() - t0) * 1000, 1)
 
         if response.status_code == 200:
@@ -371,9 +455,17 @@ def call_julia_physics_engine(
     except requests.exceptions.ConnectionError:
         elapsed_ms = round((time.time() - t0) * 1000, 1)
         err_msg = (
-            "Cannot connect to the Julia Physics Microservice at http://localhost:8080.\n\n"
+            "Cannot connect to the Julia Physics Microservice at http://127.0.0.1:8080.\n\n"
             "Ensure the server is running in a terminal:\n"
             "  julia --project=. --threads=auto server.jl"
+        )
+        return False, err_msg, elapsed_ms
+    except requests.exceptions.ReadTimeout:
+        elapsed_ms = round((time.time() - t0) * 1000, 1)
+        err_msg = (
+            f"Julia Physics Microservice read timed out after {elapsed_ms/1000:.1f}s.\n\n"
+            "On an initial cold start, Julia may take up to 30s to JIT-compile the multi-threaded cellular automata routines.\n"
+            "Now that compilation is complete, please click 'EXECUTE LIVE SIMULATION' once more."
         )
         return False, err_msg, elapsed_ms
     except Exception as e:
@@ -636,7 +728,41 @@ with st.sidebar:
         )
 
     st.markdown("---")
-    execute_sim = st.button("🚀 EXECUTE LIVE SIMULATION", use_container_width=True, type="primary")
+
+    # Real-Time Julia Physics Engine Health Check
+    julia_online, julia_status = check_julia_health()
+
+    if julia_online:
+        st.markdown(
+            '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 0.78rem; color: #34D399; font-weight: 700;">'
+            '<span style="height: 8px; width: 8px; background-color: #10B981; border-radius: 50%; display: inline-block;"></span>'
+            'JULIA HPC ENGINE: READY (PORT 8080)'
+            '</div>',
+            unsafe_allow_html=True
+        )
+        execute_sim = st.button("🚀 EXECUTE LIVE SIMULATION", use_container_width=True, type="primary")
+    else:
+        st.markdown(
+            '<div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;">'
+            '<div style="color: #FBBF24; font-weight: 700; font-size: 0.8rem; margin-bottom: 4px;">'
+            '⏳ Julia Engine Starting / Offline'
+            '</div>'
+            '<div style="color: #8B949E; font-size: 0.75rem; line-height: 1.4; margin-bottom: 8px;">'
+            'Connecting to <code>http://127.0.0.1:8080/health</code>. Waiting for Oxygen.jl router to initialize...'
+            '</div>'
+            '</div>',
+            unsafe_allow_html=True
+        )
+        if st.button("🔄 Check Engine Status", use_container_width=True):
+            st.rerun()
+
+        execute_sim = st.button(
+            "🚀 EXECUTE LIVE SIMULATION",
+            use_container_width=True,
+            type="primary",
+            disabled=True,
+            help="Julia physics engine is initializing or offline. Run 'julia --project=. --threads=auto server.jl' in a terminal."
+        )
 
     st.markdown("---")
     st.caption(f"Engine: Julia Oxygen.jl (port 8080)\nOrchestrator: {GEMINI_MODEL}")
@@ -646,12 +772,18 @@ with st.sidebar:
 # =============================================================================
 
 # Top Header
-st.markdown("""
+hpc_badge = (
+    '<span class="badge-live" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border-color: rgba(16, 185, 129, 0.35);">🟢 HPC LINK ONLINE (PORT 8080)</span>'
+    if julia_online else
+    '<span class="badge-live" style="background: rgba(245, 158, 11, 0.15); color: #FBBF24; border-color: rgba(245, 158, 11, 0.35);">⏳ HPC ENGINE INITIALIZING</span>'
+)
+
+st.markdown(f"""
 <div class="aegis-header">
     <div class="aegis-title">
         <span class="pulse">●</span> AEGIS // SURGE COMMAND CONSOLE
     </div>
-    <div class="badge-live">LOCAL HPC LINK ACTIVE</div>
+    {hpc_badge}
 </div>
 """, unsafe_allow_html=True)
 
@@ -743,6 +875,7 @@ with tab_live:
 
         critical_count = sum(1 for n in nodes if n.get("status") == "Critical")
         at_risk_count = sum(1 for n in nodes if n.get("status") == "At Risk")
+        safe_count = sum(1 for n in nodes if n.get("status") == "Safe")
 
         kpi1, kpi2, kpi3, kpi4 = st.columns(4)
         with kpi1:
@@ -750,7 +883,7 @@ with tab_live:
         with kpi2:
             st.metric("Inland Penetration", f"{max_penetration:.1f} m", delta="Max flood reach")
         with kpi3:
-            st.metric("Critical Assets", f"{critical_count} Units", delta=f"{at_risk_count} At Risk", delta_color="inverse")
+            st.metric("Critical Assets", f"{critical_count} / {len(nodes)} Units", delta=f"{at_risk_count} At Risk | {safe_count} Safe", delta_color="inverse")
         with kpi4:
             st.metric("Julia HPC Latency", f"{sim_time} ms", delta=f"{threads_used} CPU Threads")
 
@@ -761,40 +894,104 @@ with tab_live:
         # =====================================================================
         col_map, col_ai = st.columns([6, 4], gap="medium")
 
+        # Resolve parametric triggers upfront for cross-component access
+        triggers = st.session_state.get("parametric_triggers")
+        if not triggers and nodes:
+            triggers = evaluate_parametric_insurance_triggers(nodes)
+        triggers_dict = {t["asset_id"]: t for t in (triggers or [])}
+
         with col_map:
-            st.markdown('<div class="noir-card-header"><span>🗺️ Live Hydrodynamic Inundation Vector Map</span><span>EPSG:4326</span></div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="noir-card-header">'
+                f'<span>🗺️ Live Hydrodynamic Inundation Vector Map ({len(nodes)} Assets)</span>'
+                f'<span>EPSG:4326 // PURI, ODISHA</span>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
             
-            # Initialize Folium Map
+            # Initialize Folium Map centered on the Puri Coastal Grid
             m = folium.Map(
-                location=[17.718, 83.315],
-                zoom_start=13,
+                location=[19.810, 85.815],
+                zoom_start=12,
                 tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
                 attr="Esri World Imagery"
             )
 
+            # Map Clustering for Visual Ergonomics when Zoomed Out
+            # Disables clustering automatically at street/coastal scale (zoom >= 14)
+            marker_cluster = plugins.MarkerCluster(
+                name="Critical Infrastructure Cluster",
+                options={
+                    "maxClusterRadius": 35,
+                    "spiderfyOnMaxZoom": True,
+                    "showCoverageOnHover": False,
+                    "zoomToBoundsOnClick": True,
+                    "disableClusteringAtZoom": 14
+                }
+            ).add_to(m)
+
+            # Category human-readable label lookup
+            category_labels = {
+                "power_grid": "Power Grid",
+                "hospital": "Medical Facility",
+                "road": "Arterial / Evac Route",
+                "school_shelter": "School Shelter",
+                "water_treatment": "Water Treatment",
+                "logistics": "Logistics Depot"
+            }
+
             # Plot Infrastructure Nodes from Julia Telemetry
             for node in nodes:
                 node_id = node.get("id", "asset")
-                depth = node.get("final_water_depth", 0.0)
-                status = node.get("status", "Safe")
-                itype = node.get("type", "infrastructure")
+                depth = float(node.get("final_water_depth", 0.0))
+                status = str(node.get("status", "Safe"))
+                itype = str(node.get("type", "infrastructure"))
+                grid_x = node.get("x", node.get("x_idx", "?"))
+                grid_y = node.get("y", node.get("y_idx", "?"))
+                trig_info = triggers_dict.get(node_id, {})
+                trig_status = trig_info.get("trigger_status", "N/A")
+                payout_pct = trig_info.get("payout_percentage", 0)
 
-                # Resolve coordinates or use map defaults
-                lat, lon = ASSET_COORDINATES.get(node_id, (17.715, 83.315))
+                # Resolve coordinates or default to Puri centroid
+                lat, lon = ASSET_COORDINATES.get(node_id, (19.808, 85.820))
 
                 color = "#EF4444" if status == "Critical" else ("#F59E0B" if status == "At Risk" else "#10B981")
-                radius = 12 if status == "Critical" else (9 if status == "At Risk" else 7)
+                radius = 11 if status == "Critical" else (8 if status == "At Risk" else 6)
+                cat_name = category_labels.get(itype, itype.replace("_", " ").title())
+
+                tooltip_html = (
+                    f"<div style='font-family: ui-monospace, sans-serif; font-size: 11px; line-height: 1.4;'>"
+                    f"<b>{node_id}</b><br/>"
+                    f"Category: {cat_name}<br/>"
+                    f"Grid Cell: ({grid_x}, {grid_y})<br/>"
+                    f"Depth: <b>{depth:.2f}m</b><br/>"
+                    f"Status: <b style='color:{color}'>{status}</b>"
+                    f"</div>"
+                )
+
+                popup_html = (
+                    f"<div style='font-family: ui-monospace, sans-serif; font-size: 12px; min-width: 200px; color: #111827;'>"
+                    f"<div style='font-weight: 800; font-size: 13px; margin-bottom: 4px;'>{node_id.replace('_', ' ').title()}</div>"
+                    f"<div style='color: #4B5563; margin-bottom: 4px;'><b>Category:</b> {cat_name}</div>"
+                    f"<div><b>Grid Cell:</b> ({grid_x}, {grid_y})</div>"
+                    f"<div><b>Inundation Depth:</b> <span style='font-weight: bold; color: {color};'>{depth:.4f}m</span></div>"
+                    f"<div><b>Physical Status:</b> <span style='font-weight: bold; color: {color};'>{status}</span></div>"
+                    f"<div><b>Vulnerability:</b> {node.get('vulnerability_score', 0.0):.2f}</div>"
+                    f"<div><b>Parametric Trigger:</b> {trig_status} ({payout_pct}%)</div>"
+                    f"</div>"
+                )
 
                 folium.CircleMarker(
                     location=[lat, lon],
                     radius=radius,
                     color=color,
-                    weight=2,
+                    weight=2.5,
                     fill=True,
                     fill_color=color,
-                    fill_opacity=0.75,
-                    tooltip=f"<b>{node_id}</b><br>Type: {itype}<br>Depth: {depth:.2f}m<br>Status: {status}"
-                ).add_to(m)
+                    fill_opacity=0.85,
+                    tooltip=tooltip_html,
+                    popup=folium.Popup(popup_html, max_width=320)
+                ).add_to(marker_cluster)
 
             # Overlay Cyclone Fani IBTrACS Track if present
             if os.path.exists(DEFAULT_GEOJSON_PATH):
@@ -803,15 +1000,17 @@ with tab_live:
                         track_data = json.load(f)
                     folium.GeoJson(
                         track_data,
-                        name="Cyclone Fani Track",
+                        name="Cyclone Fani Landfall Track",
                         style_function=lambda x: {
                             "color": "#DC2626",
-                            "weight": 3,
+                            "weight": 3.5,
                             "opacity": 0.85
                         }
                     ).add_to(m)
                 except Exception:
                     pass
+
+            folium.LayerControl(position="topright", collapsed=True).add_to(m)
 
             # Render Map in Container
             st_folium(m, height=480, use_container_width=True)
@@ -830,28 +1029,43 @@ with tab_live:
             dispatch_text = st.session_state.get("dispatch_order", "No dispatch generated.")
             st.markdown(f'<div class="dispatch-console">{dispatch_text}</div>', unsafe_allow_html=True)
 
-            # Dedicated Parametric Trigger Status Card
-            triggers = st.session_state.get("parametric_triggers")
-            if not triggers and nodes:
-                triggers = evaluate_parametric_insurance_triggers(nodes)
-
+            # Dedicated Parametric Trigger Status Card (Scrollable Ledger)
             if triggers:
-                st.markdown("""
-                <div style="margin-top: 10px; background: #161B22; border: 1px solid #30363D; border-left: 4px solid #10B981; border-radius: 6px; padding: 10px 14px;">
-                    <div style="font-size: 0.76rem; font-weight: 800; color: #34D399; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px;">
-                        ⚡ PARAMETRIC TRIGGER STATUS (AUTOMATED SETTLEMENT LIQUIDITY)
-                    </div>
-                """, unsafe_allow_html=True)
+                full_count = sum(1 for t in triggers if t.get("payout_percentage") == 100)
+                partial_count = sum(1 for t in triggers if t.get("payout_percentage") == 50)
+                safe_trig_count = sum(1 for t in triggers if t.get("payout_percentage") == 0)
+
+                trigger_items_html = []
                 for trig in triggers:
-                    payout_badge = "pill-critical" if trig["payout_percentage"] == 100 else ("pill-at-risk" if trig["payout_percentage"] == 50 else "pill-safe")
-                    st.markdown(
-                        f"<div style='font-family: ui-monospace, monospace; font-size: 0.80rem; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;'>"
-                        f"<span><strong>{trig['asset_id']}</strong> ({trig['flood_depth_m']}m)</span>"
-                        f"<span class='{payout_badge}'>{trig['trigger_status']} ({trig['payout_percentage']}%)</span>"
-                        f"</div>",
-                        unsafe_allow_html=True
+                    pct = trig.get("payout_percentage", 0)
+                    payout_badge = "pill-critical" if pct == 100 else ("pill-at-risk" if pct == 50 else "pill-safe")
+                    trigger_items_html.append(
+                        f"<div style='font-family: ui-monospace, monospace; font-size: 0.78rem; padding: 4px 2px; "
+                        f"border-bottom: 1px solid rgba(48, 54, 61, 0.45); display: flex; justify-content: space-between; align-items: center; gap: 8px;'>"
+                        f"<span style='white-space: nowrap; overflow: hidden; text-overflow: ellipsis;' title='{trig['asset_id']}'>"
+                        f"<strong>{trig['asset_id']}</strong> <span style='color: #8B949E;'>({trig['flood_depth_m']:.2f}m)</span>"
+                        f"</span>"
+                        f"<span class='{payout_badge}' style='flex-shrink: 0;'>{trig['trigger_status']} ({pct}%)</span>"
+                        f"</div>"
                     )
-                st.markdown("</div>", unsafe_allow_html=True)
+
+                st.markdown(f"""
+                <div style="margin-top: 10px; background: #161B22; border: 1px solid #30363D; border-left: 4px solid #10B981; border-radius: 6px; padding: 10px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 4px;">
+                        <span style="font-size: 0.76rem; font-weight: 800; color: #34D399; letter-spacing: 0.06em; text-transform: uppercase;">
+                            ⚡ PARAMETRIC TRIGGER STATUS ({len(triggers)} ASSETS)
+                        </span>
+                        <span style="font-size: 0.70rem; color: #8B949E; font-weight: 600;">
+                            <span style="color: #F87171;">● {full_count} Full</span> &nbsp;|&nbsp; 
+                            <span style="color: #FBBF24;">● {partial_count} Partial</span> &nbsp;|&nbsp; 
+                            <span style="color: #34D399;">● {safe_trig_count} Safe</span>
+                        </span>
+                    </div>
+                    <div style="max-height: 220px; overflow-y: auto; padding-right: 4px;">
+                        {''.join(trigger_items_html)}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
         # Detailed Infrastructure Matrix Table
         st.markdown("---")
@@ -893,25 +1107,39 @@ with tab_live:
             st.caption(f"ℹ️ **Perception Provenance:** Meta V-JEPA 2 ViT-L processed a Sentinel-1/2 16-frame spatiotemporal tile ({vjepa_info.get('latent_tokens', 1568)} tokens × {vjepa_info.get('embedding_dim', 1024)} dim). Effective cellular automata iterations modulated to **{eff_iters}**.")
             st.markdown("</div>", unsafe_allow_html=True)
 
-        st.markdown('<div class="noir-card-header"><span>📋 Infrastructure Inundation Assessment Telemetry</span></div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="noir-card-header">'
+            f'<span>📋 Infrastructure Inundation Assessment Telemetry ({len(nodes)} Assets)</span>'
+            f'<span style="font-size: 0.75rem; color: #8B949E;">Puri Coastal Grid (100×100 CA Hydraulic Evaluation)</span>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
-        triggers_dict = {t["asset_id"]: t for t in (triggers or [])}
         table_data = []
+        table_category_map = {
+            "power_grid": "⚡ Power Grid",
+            "hospital": "🏥 Medical Facility",
+            "road": "🛣️ Arterial / Evac Route",
+            "school_shelter": "🏫 School Shelter",
+            "water_treatment": "💧 Water Treatment",
+            "logistics": "📦 Logistics Depot"
+        }
         for n in nodes:
-            nid = n.get("id")
+            nid = n.get("id", "asset")
+            ntype = n.get("type", "node")
+            cat_display = table_category_map.get(ntype, ntype.replace('_', ' ').title())
             trig_info = triggers_dict.get(nid, {})
             table_data.append({
                 "Asset ID": nid,
-                "Category": n.get("type", "node"),
-                "Grid X": n.get("x", n.get("x_idx")),
-                "Grid Y": n.get("y", n.get("y_idx")),
+                "Category": cat_display,
+                "Grid Cell (X,Y)": f"({n.get('x', n.get('x_idx'))}, {n.get('y', n.get('y_idx'))})",
                 "Flood Depth (m)": f"{n.get('final_water_depth', 0.0):.4f}",
                 "Vulnerability Score": f"{n.get('vulnerability_score', 0.0):.2f}",
                 "Physical Status": n.get("status"),
                 "Parametric Trigger": f"{trig_info.get('trigger_status', 'N/A')} ({trig_info.get('payout_percentage', 0)}%)"
             })
 
-        st.dataframe(table_data, use_container_width=True)
+        st.dataframe(table_data, use_container_width=True, height=420)
 
     else:
         # Zero State Prompt
