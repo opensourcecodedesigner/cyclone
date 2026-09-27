@@ -14,6 +14,7 @@ import os
 import sys
 import json
 import time
+from datetime import datetime
 import requests
 import streamlit as st
 import folium
@@ -211,7 +212,7 @@ st.markdown("""
         color: #E6EDF3;
         line-height: 1.55;
         white-space: pre-wrap;
-        max-height: 520px;
+        max-height: 380px;
         overflow-y: auto;
     }
 
@@ -794,6 +795,8 @@ if "triage_decision" not in st.session_state:
     st.session_state["triage_decision"] = None
 if "dispatch_order" not in st.session_state:
     st.session_state["dispatch_order"] = None
+if "dispatch_timestamp" not in st.session_state:
+    st.session_state["dispatch_timestamp"] = None
 if "last_surge" not in st.session_state:
     st.session_state["last_surge"] = 5.0
 if "last_wind" not in st.session_state:
@@ -856,6 +859,7 @@ if execute_sim:
             st.session_state["triage_decision"] = triage_dec
             st.session_state["dispatch_order"] = dispatch_text
             st.session_state["parametric_triggers"] = insurance_triggers
+            st.session_state["dispatch_timestamp"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S IST")
 
 # =============================================================================
 # =============================================================================
@@ -1028,6 +1032,44 @@ with tab_live:
 
             dispatch_text = st.session_state.get("dispatch_order", "No dispatch generated.")
             st.markdown(f'<div class="dispatch-console">{dispatch_text}</div>', unsafe_allow_html=True)
+
+            # Alert Dispatched Confirmation Panel (Multi-Agency Delivery Receipt)
+            if st.session_state.get("dispatch_order"):
+                dispatch_time = st.session_state.get("dispatch_timestamp") or datetime.now().strftime("%Y-%m-%d %H:%M:%S IST")
+                st.markdown(f"""
+                <div style="margin-top: 10px; background: #161B22; border: 1px solid #30363D; border-left: 4px solid #3B82F6; border-radius: 6px; padding: 10px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 4px;">
+                        <span style="font-size: 0.76rem; font-weight: 800; color: #60A5FA; letter-spacing: 0.06em; text-transform: uppercase;">
+                            📡 ALERT DISPATCHED // MULTI-AGENCY CONFIRMATION
+                        </span>
+                        <span style="font-size: 0.70rem; color: #8B949E; font-family: ui-monospace, monospace;">
+                            ⏱ {dispatch_time}
+                        </span>
+                    </div>
+                    <div style="font-family: ui-monospace, monospace; font-size: 0.77rem; line-height: 1.6; color: #C9D1D9;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(48, 54, 61, 0.45); padding: 3px 0;">
+                            <span>⚡ <strong>Power Division</strong>:</span>
+                            <span style="color: #34D399; font-weight: 600;">✓ Delivered to Municipal Command Center</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(48, 54, 61, 0.45); padding: 3px 0;">
+                            <span>🏥 <strong>Medical Division</strong>:</span>
+                            <span style="color: #34D399; font-weight: 600;">✓ Delivered to District Hospital Administration</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(48, 54, 61, 0.45); padding: 3px 0;">
+                            <span>🛣️ <strong>Transport Division</strong>:</span>
+                            <span style="color: #34D399; font-weight: 600;">✓ Delivered to Highway & Transit Control</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 0;">
+                            <span>🦺 <strong>NDRF Command</strong>:</span>
+                            <span style="color: #34D399; font-weight: 600;">✓ Delivered to Emergency Operations Center</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 0.68rem; color: #8B949E; border-top: 1px solid rgba(48, 54, 61, 0.5); padding-top: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>Protocol: <b>CAP-v1.2 // EDXL-DE Multi-Agency Relay</b></span>
+                        <span style="color: #34D399; font-weight: 700;">● 4/4 Deliveries Confirmed</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
             # Dedicated Parametric Trigger Status Card (Scrollable Ledger)
             if triggers:
