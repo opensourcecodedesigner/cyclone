@@ -1,0 +1,617 @@
+{
+  "experiment": "AEGIS V-JEPA 2 Hydrodynamic Simulation Ablation & Threshold Optimization",
+  "benchmark_dataset": "Copernicus EMS EMSR357 (TerraSAR-X / COSMO-SkyMed / Sentinel-1)",
+  "event": "Tropical Cyclone Fani Landfall (Puri, Odisha)",
+  "domain_shape": [
+    100,
+    100
+  ],
+  "grid_resolution_m": 30.0,
+  "default_reference_threshold_m": 0.15,
+  "optimal_flood_threshold_m": 0.01,
+  "threshold_sweep_summary": {
+    "min_threshold_m": 0.01,
+    "max_threshold_m": 0.5,
+    "step_m": 0.01,
+    "total_thresholds_evaluated": 50,
+    "optimal_threshold_m": 0.01,
+    "max_iou_pct": 52.91,
+    "recall_at_max_iou_pct": 62.6,
+    "precision_at_max_iou_pct": 77.37,
+    "f1_at_max_iou_pct": 69.21,
+    "simulated_area_at_max_iou_km2": 1.14,
+    "intersection_area_at_max_iou_km2": 0.88
+  },
+  "baseline_physics_only": {
+    "saturation_assumption": "Uniform 0.50 (Scalar Constant)",
+    "mannings_n_assumption": "Uniform 0.035 (Scalar Constant)",
+    "metrics_at_optimal_threshold": {
+      "intersection_over_union_pct": 51.24,
+      "overlap_recall_pct": 59.22,
+      "precision_pct": 79.18,
+      "f1_score_pct": 67.76,
+      "accuracy_pct": 91.17,
+      "confusion_matrix": {
+        "true_positives_cells": 928,
+        "false_positives_cells": 244,
+        "false_negatives_cells": 639,
+        "true_negatives_cells": 8189,
+        "total_cells": 10000
+      },
+      "spatial_extents_km2": {
+        "predicted_flood_area": 1.05,
+        "ground_truth_flood_area": 1.41,
+        "intersection_area": 0.84,
+        "union_area": 1.63
+      },
+      "flood_depth_threshold_m": 0.01
+    },
+    "metrics_at_reference_threshold": {
+      "intersection_over_union_pct": 44.23,
+      "overlap_recall_pct": 47.73,
+      "precision_pct": 85.78,
+      "f1_score_pct": 61.34,
+      "accuracy_pct": 90.57,
+      "confusion_matrix": {
+        "true_positives_cells": 748,
+        "false_positives_cells": 124,
+        "false_negatives_cells": 819,
+        "true_negatives_cells": 8309,
+        "total_cells": 10000
+      },
+      "spatial_extents_km2": {
+        "predicted_flood_area": 0.78,
+        "ground_truth_flood_area": 1.41,
+        "intersection_area": 0.67,
+        "union_area": 1.52
+      },
+      "flood_depth_threshold_m": 0.15
+    },
+    "simulation_meta": {
+      "elapsed_julia_ms": 300.0,
+      "elapsed_wall_ms": 3122.49,
+      "threads_used": 1,
+      "max_inland_penetration_m": 270.0,
+      "surge_applied_m": 5.89,
+      "iterations": 120
+    }
+  },
+  "vjepa2_enhanced_spatial": {
+    "saturation_mapping": "ParameterProjectionHead 2D Grid [0.0 - 1.0]",
+    "mannings_n_mapping": "ParameterProjectionHead 2D Grid [0.01 - 0.15]",
+    "vjepa_telemetry": {
+      "status": "SUCCESS",
+      "model": "V-JEPA 2 ViT-L + ParameterProjectionHead",
+      "device": "cuda:0",
+      "target_grid_shape": [
+        100,
+        100
+      ],
+      "saturation_bounds": [
+        0.1227,
+        1.0
+      ],
+      "saturation_mean": 0.5881,
+      "manning_bounds": [
+        0.01,
+        0.0433
+      ],
+      "manning_mean": 0.0115,
+      "elapsed_ms": 11091.12
+    },
+    "metrics_at_optimal_threshold": {
+      "intersection_over_union_pct": 52.91,
+      "overlap_recall_pct": 62.6,
+      "precision_pct": 77.37,
+      "f1_score_pct": 69.21,
+      "accuracy_pct": 91.27,
+      "confusion_matrix": {
+        "true_positives_cells": 981,
+        "false_positives_cells": 287,
+        "false_negatives_cells": 586,
+        "true_negatives_cells": 8146,
+        "total_cells": 10000
+      },
+      "spatial_extents_km2": {
+        "predicted_flood_area": 1.14,
+        "ground_truth_flood_area": 1.41,
+        "intersection_area": 0.88,
+        "union_area": 1.67
+      },
+      "flood_depth_threshold_m": 0.01
+    },
+    "metrics_at_reference_threshold": {
+      "intersection_over_union_pct": 44.33,
+      "overlap_recall_pct": 47.93,
+      "precision_pct": 85.54,
+      "f1_score_pct": 61.43,
+      "accuracy_pct": 90.57,
+      "confusion_matrix": {
+        "true_positives_cells": 751,
+        "false_positives_cells": 127,
+        "false_negatives_cells": 816,
+        "true_negatives_cells": 8306,
+        "total_cells": 10000
+      },
+      "spatial_extents_km2": {
+        "predicted_flood_area": 0.79,
+        "ground_truth_flood_area": 1.41,
+        "intersection_area": 0.68,
+        "union_area": 1.52
+      },
+      "flood_depth_threshold_m": 0.15
+    },
+    "simulation_meta": {
+      "elapsed_julia_ms": 330.0,
+      "elapsed_wall_ms": 2977.01,
+      "threads_used": 1,
+      "max_inland_penetration_m": 300.0,
+      "surge_applied_m": 5.89,
+      "iterations": 120
+    }
+  },
+  "statistical_comparison_at_optimal_threshold": {
+    "optimal_threshold_m": 0.01,
+    "delta_iou_absolute_pct": 1.67,
+    "relative_iou_improvement_pct": 3.3,
+    "delta_recall_absolute_pct": 3.38,
+    "delta_precision_absolute_pct": -1.81,
+    "conclusion": "At the optimal threshold of 0.01m, V-JEPA 2 spatial embeddings achieve an absolute maximum IoU of 52.91% (\u0394IoU = +1.67% over uniform baseline)."
+  },
+  "statistical_comparison_at_reference_threshold": {
+    "reference_threshold_m": 0.15,
+    "delta_iou_absolute_pct": 0.1
+  },
+  "threshold_sweep_curve": [
+    {
+      "threshold_m": 0.01,
+      "iou_pct": 52.91,
+      "recall_pct": 62.6,
+      "precision_pct": 77.37,
+      "f1_score_pct": 69.21,
+      "predicted_flood_area_km2": 1.14,
+      "intersection_area_km2": 0.88
+    },
+    {
+      "threshold_m": 0.02,
+      "iou_pct": 51.3,
+      "recall_pct": 59.22,
+      "precision_pct": 79.32,
+      "f1_score_pct": 67.81,
+      "predicted_flood_area_km2": 1.05,
+      "intersection_area_km2": 0.84
+    },
+    {
+      "threshold_m": 0.03,
+      "iou_pct": 49.32,
+      "recall_pct": 55.71,
+      "precision_pct": 81.13,
+      "f1_score_pct": 66.06,
+      "predicted_flood_area_km2": 0.97,
+      "intersection_area_km2": 0.79
+    },
+    {
+      "threshold_m": 0.04,
+      "iou_pct": 49.35,
+      "recall_pct": 55.65,
+      "precision_pct": 81.34,
+      "f1_score_pct": 66.09,
+      "predicted_flood_area_km2": 0.96,
+      "intersection_area_km2": 0.78
+    },
+    {
+      "threshold_m": 0.05,
+      "iou_pct": 49.32,
+      "recall_pct": 55.58,
+      "precision_pct": 81.4,
+      "f1_score_pct": 66.06,
+      "predicted_flood_area_km2": 0.96,
+      "intersection_area_km2": 0.78
+    },
+    {
+      "threshold_m": 0.06,
+      "iou_pct": 49.46,
+      "recall_pct": 55.52,
+      "precision_pct": 81.92,
+      "f1_score_pct": 66.18,
+      "predicted_flood_area_km2": 0.96,
+      "intersection_area_km2": 0.78
+    },
+    {
+      "threshold_m": 0.07,
+      "iou_pct": 47.08,
+      "recall_pct": 51.95,
+      "precision_pct": 83.4,
+      "f1_score_pct": 64.02,
+      "predicted_flood_area_km2": 0.88,
+      "intersection_area_km2": 0.73
+    },
+    {
+      "threshold_m": 0.08,
+      "iou_pct": 47.05,
+      "recall_pct": 51.88,
+      "precision_pct": 83.47,
+      "f1_score_pct": 63.99,
+      "predicted_flood_area_km2": 0.88,
+      "intersection_area_km2": 0.73
+    },
+    {
+      "threshold_m": 0.09,
+      "iou_pct": 47.05,
+      "recall_pct": 51.88,
+      "precision_pct": 83.47,
+      "f1_score_pct": 63.99,
+      "predicted_flood_area_km2": 0.88,
+      "intersection_area_km2": 0.73
+    },
+    {
+      "threshold_m": 0.1,
+      "iou_pct": 47.02,
+      "recall_pct": 51.82,
+      "precision_pct": 83.54,
+      "f1_score_pct": 63.96,
+      "predicted_flood_area_km2": 0.87,
+      "intersection_area_km2": 0.73
+    },
+    {
+      "threshold_m": 0.11,
+      "iou_pct": 47.04,
+      "recall_pct": 51.75,
+      "precision_pct": 83.78,
+      "f1_score_pct": 63.98,
+      "predicted_flood_area_km2": 0.87,
+      "intersection_area_km2": 0.73
+    },
+    {
+      "threshold_m": 0.12,
+      "iou_pct": 47.07,
+      "recall_pct": 51.69,
+      "precision_pct": 84.02,
+      "f1_score_pct": 64.01,
+      "predicted_flood_area_km2": 0.87,
+      "intersection_area_km2": 0.73
+    },
+    {
+      "threshold_m": 0.13,
+      "iou_pct": 44.33,
+      "recall_pct": 47.93,
+      "precision_pct": 85.54,
+      "f1_score_pct": 61.43,
+      "predicted_flood_area_km2": 0.79,
+      "intersection_area_km2": 0.68
+    },
+    {
+      "threshold_m": 0.14,
+      "iou_pct": 44.33,
+      "recall_pct": 47.93,
+      "precision_pct": 85.54,
+      "f1_score_pct": 61.43,
+      "predicted_flood_area_km2": 0.79,
+      "intersection_area_km2": 0.68
+    },
+    {
+      "threshold_m": 0.15,
+      "iou_pct": 44.33,
+      "recall_pct": 47.93,
+      "precision_pct": 85.54,
+      "f1_score_pct": 61.43,
+      "predicted_flood_area_km2": 0.79,
+      "intersection_area_km2": 0.68
+    },
+    {
+      "threshold_m": 0.16,
+      "iou_pct": 44.3,
+      "recall_pct": 47.86,
+      "precision_pct": 85.62,
+      "f1_score_pct": 61.4,
+      "predicted_flood_area_km2": 0.79,
+      "intersection_area_km2": 0.67
+    },
+    {
+      "threshold_m": 0.17,
+      "iou_pct": 44.3,
+      "recall_pct": 47.86,
+      "precision_pct": 85.62,
+      "f1_score_pct": 61.4,
+      "predicted_flood_area_km2": 0.79,
+      "intersection_area_km2": 0.67
+    },
+    {
+      "threshold_m": 0.18,
+      "iou_pct": 44.3,
+      "recall_pct": 47.86,
+      "precision_pct": 85.62,
+      "f1_score_pct": 61.4,
+      "predicted_flood_area_km2": 0.79,
+      "intersection_area_km2": 0.67
+    },
+    {
+      "threshold_m": 0.19,
+      "iou_pct": 44.27,
+      "recall_pct": 47.8,
+      "precision_pct": 85.7,
+      "f1_score_pct": 61.37,
+      "predicted_flood_area_km2": 0.79,
+      "intersection_area_km2": 0.67
+    },
+    {
+      "threshold_m": 0.2,
+      "iou_pct": 44.32,
+      "recall_pct": 47.8,
+      "precision_pct": 85.89,
+      "f1_score_pct": 61.42,
+      "predicted_flood_area_km2": 0.78,
+      "intersection_area_km2": 0.67
+    },
+    {
+      "threshold_m": 0.21,
+      "iou_pct": 44.25,
+      "recall_pct": 47.67,
+      "precision_pct": 86.06,
+      "f1_score_pct": 61.36,
+      "predicted_flood_area_km2": 0.78,
+      "intersection_area_km2": 0.67
+    },
+    {
+      "threshold_m": 0.22,
+      "iou_pct": 44.25,
+      "recall_pct": 47.67,
+      "precision_pct": 86.06,
+      "f1_score_pct": 61.36,
+      "predicted_flood_area_km2": 0.78,
+      "intersection_area_km2": 0.67
+    },
+    {
+      "threshold_m": 0.23,
+      "iou_pct": 44.19,
+      "recall_pct": 47.54,
+      "precision_pct": 86.23,
+      "f1_score_pct": 61.29,
+      "predicted_flood_area_km2": 0.78,
+      "intersection_area_km2": 0.67
+    },
+    {
+      "threshold_m": 0.24,
+      "iou_pct": 41.05,
+      "recall_pct": 43.59,
+      "precision_pct": 87.56,
+      "f1_score_pct": 58.2,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.25,
+      "iou_pct": 41.05,
+      "recall_pct": 43.59,
+      "precision_pct": 87.56,
+      "f1_score_pct": 58.2,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.26,
+      "iou_pct": 41.05,
+      "recall_pct": 43.59,
+      "precision_pct": 87.56,
+      "f1_score_pct": 58.2,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.27,
+      "iou_pct": 41.05,
+      "recall_pct": 43.59,
+      "precision_pct": 87.56,
+      "f1_score_pct": 58.2,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.28,
+      "iou_pct": 41.05,
+      "recall_pct": 43.59,
+      "precision_pct": 87.56,
+      "f1_score_pct": 58.2,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.29,
+      "iou_pct": 41.01,
+      "recall_pct": 43.52,
+      "precision_pct": 87.66,
+      "f1_score_pct": 58.17,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.3,
+      "iou_pct": 41.01,
+      "recall_pct": 43.52,
+      "precision_pct": 87.66,
+      "f1_score_pct": 58.17,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.31,
+      "iou_pct": 41.01,
+      "recall_pct": 43.52,
+      "precision_pct": 87.66,
+      "f1_score_pct": 58.17,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.32,
+      "iou_pct": 41.01,
+      "recall_pct": 43.52,
+      "precision_pct": 87.66,
+      "f1_score_pct": 58.17,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.33,
+      "iou_pct": 41.06,
+      "recall_pct": 43.52,
+      "precision_pct": 87.89,
+      "f1_score_pct": 58.22,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.34,
+      "iou_pct": 41.02,
+      "recall_pct": 43.46,
+      "precision_pct": 87.98,
+      "f1_score_pct": 58.18,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.35,
+      "iou_pct": 41.02,
+      "recall_pct": 43.46,
+      "precision_pct": 87.98,
+      "f1_score_pct": 58.18,
+      "predicted_flood_area_km2": 0.7,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.36,
+      "iou_pct": 40.99,
+      "recall_pct": 43.4,
+      "precision_pct": 88.08,
+      "f1_score_pct": 58.14,
+      "predicted_flood_area_km2": 0.69,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.37,
+      "iou_pct": 40.99,
+      "recall_pct": 43.4,
+      "precision_pct": 88.08,
+      "f1_score_pct": 58.14,
+      "predicted_flood_area_km2": 0.69,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.38,
+      "iou_pct": 40.95,
+      "recall_pct": 43.33,
+      "precision_pct": 88.18,
+      "f1_score_pct": 58.11,
+      "predicted_flood_area_km2": 0.69,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.39,
+      "iou_pct": 40.95,
+      "recall_pct": 43.33,
+      "precision_pct": 88.18,
+      "f1_score_pct": 58.11,
+      "predicted_flood_area_km2": 0.69,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.4,
+      "iou_pct": 40.92,
+      "recall_pct": 43.27,
+      "precision_pct": 88.28,
+      "f1_score_pct": 58.07,
+      "predicted_flood_area_km2": 0.69,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.41,
+      "iou_pct": 40.92,
+      "recall_pct": 43.27,
+      "precision_pct": 88.28,
+      "f1_score_pct": 58.07,
+      "predicted_flood_area_km2": 0.69,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.42,
+      "iou_pct": 40.76,
+      "recall_pct": 43.08,
+      "precision_pct": 88.35,
+      "f1_score_pct": 57.92,
+      "predicted_flood_area_km2": 0.69,
+      "intersection_area_km2": 0.61
+    },
+    {
+      "threshold_m": 0.43,
+      "iou_pct": 37.39,
+      "recall_pct": 39.06,
+      "precision_pct": 89.74,
+      "f1_score_pct": 54.42,
+      "predicted_flood_area_km2": 0.61,
+      "intersection_area_km2": 0.55
+    },
+    {
+      "threshold_m": 0.44,
+      "iou_pct": 37.39,
+      "recall_pct": 39.06,
+      "precision_pct": 89.74,
+      "f1_score_pct": 54.42,
+      "predicted_flood_area_km2": 0.61,
+      "intersection_area_km2": 0.55
+    },
+    {
+      "threshold_m": 0.45,
+      "iou_pct": 37.39,
+      "recall_pct": 39.06,
+      "precision_pct": 89.74,
+      "f1_score_pct": 54.42,
+      "predicted_flood_area_km2": 0.61,
+      "intersection_area_km2": 0.55
+    },
+    {
+      "threshold_m": 0.46,
+      "iou_pct": 37.39,
+      "recall_pct": 39.06,
+      "precision_pct": 89.74,
+      "f1_score_pct": 54.42,
+      "predicted_flood_area_km2": 0.61,
+      "intersection_area_km2": 0.55
+    },
+    {
+      "threshold_m": 0.47,
+      "iou_pct": 37.39,
+      "recall_pct": 39.06,
+      "precision_pct": 89.74,
+      "f1_score_pct": 54.42,
+      "predicted_flood_area_km2": 0.61,
+      "intersection_area_km2": 0.55
+    },
+    {
+      "threshold_m": 0.48,
+      "iou_pct": 37.39,
+      "recall_pct": 39.06,
+      "precision_pct": 89.74,
+      "f1_score_pct": 54.42,
+      "predicted_flood_area_km2": 0.61,
+      "intersection_area_km2": 0.55
+    },
+    {
+      "threshold_m": 0.49,
+      "iou_pct": 37.39,
+      "recall_pct": 39.06,
+      "precision_pct": 89.74,
+      "f1_score_pct": 54.42,
+      "predicted_flood_area_km2": 0.61,
+      "intersection_area_km2": 0.55
+    },
+    {
+      "threshold_m": 0.5,
+      "iou_pct": 37.35,
+      "recall_pct": 38.99,
+      "precision_pct": 89.85,
+      "f1_score_pct": 54.38,
+      "predicted_flood_area_km2": 0.61,
+      "intersection_area_km2": 0.55
+    }
+  ]
+}

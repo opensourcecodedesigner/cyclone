@@ -287,20 +287,32 @@ def extract_vjepa2_features(encoder, device, tile_tensor: torch.Tensor) -> dict:
 
     inp = tile_tensor.half().to(device) if device.type == "cuda" else tile_tensor.to(device)
     with torch.no_grad():
-        # Forward pass through frozen ViT-L
-        features = encoder(inp) # [1, 1568, 1024]
+        features = encoder(inp)  # [1, 1568, 1024]
 
-    # Pool spatial tokens across temporal and spatial dimensions
-    emb_mean = features.mean(dim=1).squeeze(0).cpu().float().numpy()
-    emb_var  = features.var(dim=1).squeeze(0).cpu().float().numpy()
-
-    # Physical parameter mappings derived from latent variance:
-    # High variance in lower channels maps to soil moisture / saturation
-    sat_score = float(np.clip(0.65 + np.mean(np.abs(emb_mean[:256])) * 0.15, 0.0, 1.0))
-    cloud_score = float(np.clip(0.70 + np.mean(np.abs(emb_mean[256:512])) * 0.12, 0.0, 1.0))
-    # Surface roughness Manning's n adjustment factor (baseline: 0.035, adjusted by vegetation impedance)
-    roughness_n = float(np.clip(0.030 + np.mean(emb_var[512:768]) * 0.015, 0.025, 0.060))
-    friction_multiplier = float(round(1.0 + (roughness_n - 0.035) * 12.0, 3))
+        # Calibrated PyTorch parameter projection head
+        try:
+            from vjepa_projector import get_or_create_calibrated_projector
+            projector = get_or_create_calibrated_projector(features.float(), str(device))
+            sat_t, man_t = projector(features.float())
+            sat_grid = sat_t.squeeze(0).cpu().numpy()
+            man_grid = man_t.squeeze(0).cpu().numpy()
+            sat_score = float(round(float(sat_grid.mean()), 3))
+            roughness_n = float(round(float(man_grid.mean()), 4))
+            friction_multiplier = float(round(1.0 + (roughness_n - 0.035) * 12.0, 3))
+            cloud_score = float(round(min(1.0, 0.70 + float(sat_score) * 0.20), 3))
+            saturation_grid_list = sat_grid.round(4).tolist()
+            manning_grid_list = man_grid.round(5).tolist()
+            projection_method = "ParameterProjectionHead (Calibrated PyTorch CNN)"
+        except Exception as e:
+            emb_mean = features.mean(dim=1).squeeze(0).cpu().float().numpy()
+            emb_var  = features.var(dim=1).squeeze(0).cpu().float().numpy()
+            sat_score = float(np.clip(0.65 + np.mean(np.abs(emb_mean[:256])) * 0.15, 0.0, 1.0))
+            cloud_score = float(np.clip(0.70 + np.mean(np.abs(emb_mean[256:512])) * 0.12, 0.0, 1.0))
+            roughness_n = float(np.clip(0.030 + np.mean(emb_var[512:768]) * 0.015, 0.025, 0.060))
+            friction_multiplier = float(round(1.0 + (roughness_n - 0.035) * 12.0, 3))
+            saturation_grid_list = None
+            manning_grid_list = None
+            projection_method = f"Heuristic Slicing Fallback ({e})"
 
     latency_ms = round((time.time() - t0) * 1000, 2)
 
@@ -309,6 +321,7 @@ def extract_vjepa2_features(encoder, device, tile_tensor: torch.Tensor) -> dict:
 
     result = {
         "model": "facebookresearch/vjepa2 (ViT-Large)",
+        "projection_head": projection_method,
         "parameters_m": 303.9,
         "input_tensor_shape": [1, 3, 16, 224, 224],
         "latent_tokens": 1568,
@@ -320,7 +333,9 @@ def extract_vjepa2_features(encoder, device, tile_tensor: torch.Tensor) -> dict:
             "cloud_optical_density": round(cloud_score, 3),
             "surface_roughness_manning_n": round(roughness_n, 4),
             "effective_friction_multiplier": friction_multiplier,
-            "soil_infiltration_capacity_pct": round((1.0 - sat_score) * 100, 1)
+            "soil_infiltration_capacity_pct": round((1.0 - sat_score) * 100, 1),
+            "saturation_grid": saturation_grid_list,
+            "manning_grid": manning_grid_list
         },
         "performance": {
             "device": f"{device} ({gpu_stats['device_name']})" if device.type == "cuda" else str(device),

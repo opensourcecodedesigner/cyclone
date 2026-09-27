@@ -99,7 +99,7 @@ function simulate_surge!(
     coastline_mask::BitMatrix,
     surge_height::Float64;
     iterations::Int = DEFAULT_ITERATIONS,
-    diffusion_rate::Float64 = DIFFUSION_RATE,
+    diffusion_rate::Union{Float64, Matrix{Float64}} = DIFFUSION_RATE,
     continuous_surge::Bool = CONTINUOUS_SURGE
 )
     nx, ny = size(dem)
@@ -123,7 +123,8 @@ function simulate_surge!(
 
                 # Hydraulic head gradient flow
                 dh = ((h_n + h_s + h_w + h_e) / 4.0) - h_c
-                water_next[i, j] = max(0.0, water_depth[i, j] + diffusion_rate * dh)
+                diff = diffusion_rate isa Matrix{Float64} ? diffusion_rate[i, j] : diffusion_rate
+                water_next[i, j] = max(0.0, water_depth[i, j] + diff * dh)
             end
         end
 
@@ -312,32 +313,6 @@ end
         wind_boost = (wind_speed > 100.0) ? (wind_speed - 100.0) * 0.015 : 0.0
         effective_surge = surge_height + wind_boost
 
-        # =====================================================================
-        # V-JEPA 2 SATELLITE TERRAIN PERCEPTION INTEGRATION
-        # Extracts land saturation, Manning's n, and friction multiplier from
-        # the Meta V-JEPA 2 ViT-L satellite perception stage (Python front-end).
-        # These dynamically modulate the CA diffusion rate:
-        #   - Saturated soil (high land_saturation) -> faster flood spread
-        #   - High surface roughness (friction_multiplier > 1) -> slower diffusion
-        # Clamped to [0.05, 0.25] for CFL stability in 2D scheme.
-        # =====================================================================
-        vjepa2_active = false
-        land_saturation = 0.0
-        manning_n = 0.035
-        friction_multiplier = 1.0
-        if haskey(payload, "vjepa2_perception")
-            vp = payload["vjepa2_perception"]
-            land_saturation = Float64(get(vp, "land_saturation", 0.0))
-            manning_n = Float64(get(vp, "surface_roughness_manning_n", 0.035))
-            friction_multiplier = Float64(get(vp, "friction_multiplier", 1.0))
-            vjepa2_active = true
-            @info "V-JEPA 2 perception active" land_saturation manning_n friction_multiplier
-        end
-
-        # Compute V-JEPA 2 modulated diffusion rate
-        sat_boost = 1.0 + land_saturation * 0.15
-        effective_diffusion = clamp(DIFFUSION_RATE * sat_boost / max(friction_multiplier, 0.1), 0.05, 0.25)
-
         # 3. Setup Grid (from payload or high-fidelity UI fallback)
         local dem, coastline_mask
         if haskey(payload, "dem") && haskey(payload, "coastline_mask")
@@ -350,6 +325,44 @@ end
             dem = zeros(Float64, nx, ny)
             coastline_mask = falses(nx, ny)
             coastline_mask[1, :] .= true
+        end
+
+        # =====================================================================
+        # V-JEPA 2 SATELLITE TERRAIN PERCEPTION INTEGRATION
+        # Ingests 2D calibrated parameter grids (or scalar fallbacks)
+        # =====================================================================
+        vjepa2_active = false
+        local effective_diffusion
+        if haskey(payload, "vjepa2_perception")
+            vp = payload["vjepa2_perception"]
+            vjepa2_active = true
+
+            sat_key = haskey(vp, "saturation_grid") ? "saturation_grid" : (haskey(vp, "land_saturation_grid") ? "land_saturation_grid" : nothing)
+            man_key = haskey(vp, "manning_grid") ? "manning_grid" : (haskey(vp, "manning_n_grid") ? "manning_n_grid" : (haskey(vp, "surface_roughness_manning_n_grid") ? "surface_roughness_manning_n_grid" : nothing))
+
+            if sat_key !== nothing && man_key !== nothing
+                sat_mat = parse_grid(vp[sat_key], Float64)
+                man_mat = parse_grid(vp[man_key], Float64)
+                diff_mat = zeros(Float64, nx, ny)
+                @inbounds for j in 1:ny, i in 1:nx
+                    s = sat_mat[i, j]
+                    n = man_mat[i, j]
+                    f_mult = 1.0 + (n - 0.035) * 12.0
+                    s_boost = 1.0 + s * 0.15
+                    diff_mat[i, j] = clamp(DIFFUSION_RATE * s_boost / max(f_mult, 0.1), 0.05, 0.25)
+                end
+                effective_diffusion = diff_mat
+                @info "V-JEPA 2 2D spatial diffusion grid active ($(nx)x$(ny))"
+            else
+                land_saturation = Float64(get(vp, "land_saturation", 0.0))
+                manning_n = Float64(get(vp, "surface_roughness_manning_n", 0.035))
+                friction_multiplier = Float64(get(vp, "friction_multiplier", 1.0))
+                sat_boost = 1.0 + land_saturation * 0.15
+                effective_diffusion = clamp(DIFFUSION_RATE * sat_boost / max(friction_multiplier, 0.1), 0.05, 0.25)
+                @info "V-JEPA 2 scalar perception active" land_saturation manning_n friction_multiplier
+            end
+        else
+            effective_diffusion = DIFFUSION_RATE
         end
 
         # Infrastructure Nodes (from payload or fallback representative assets)
@@ -422,6 +435,7 @@ end
         @info "Completed multi-threaded surge simulation in $(elapsed_ms)ms ($(Threads.nthreads()) threads) for grid $(nx)x$(ny) with $(length(node_results)) nodes."
 
         # 7. UI-Ready Response Payload
+        diff_rate_repr = effective_diffusion isa Matrix{Float64} ? round(sum(effective_diffusion)/length(effective_diffusion), digits=4) : round(effective_diffusion, digits=4)
         response_dict = Dict(
             "message" => "Simulation complete",
             "surge_applied" => round(effective_surge, digits=2),
@@ -432,7 +446,8 @@ end
             "max_inland_penetration" => max_penetration_m,
             "node_results" => node_results,
             "vjepa2_perception_applied" => vjepa2_active,
-            "effective_diffusion_rate" => round(effective_diffusion, digits=4)
+            "effective_diffusion_rate" => diff_rate_repr,
+            "water_depth" => [collect(water_depth[i, :]) for i in 1:nx]
         )
 
         return HTTP.Response(
