@@ -2432,3 +2432,29 @@ main {
   letter-spacing: 0.01em;
 }
 
+/* Ground Truth Area Verification Metrics */
+.area-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 1rem;
+  margin: 1rem 0;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.area-stat strong {
+  color: #f8fafc;
+}
+
+.area-dot {
+  color: var(--accent-cyan);
+  opacity: 0.5;
+}
+
