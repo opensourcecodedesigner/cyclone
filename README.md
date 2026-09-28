@@ -24,16 +24,16 @@ During catastrophic tropical cyclones (Category 4+ Super Cyclones), municipal em
 
 **AEGIS (Autonomous Emergency Generation & Intelligence System)** eliminates this bottleneck. Designed as a dual-engine, local-first disaster intelligence pipeline, AEGIS directly couples **satellite computer vision perception**, **high-performance physical hydrodynamics**, and **autonomous multi-tier AI orchestration**. 
 
-By executing 2D cellular automata inundation routing at native bare-metal speeds and delegating triage to a dual-phase cognitive pipeline (System 1 Deterministic Triage + System 2 Deep Reasoning), AEGIS converts raw cyclone barometric, track, and satellite telemetry into cryptographically auditable, **Common Alerting Protocol (CAP)**-compliant tactical orders, **multilingual voice alerts (TTS)**, and **smart-contract parametric insurance settlements** in **under 3 seconds**.
+By executing 2D cellular automata inundation routing at native bare-metal speeds and delegating triage to a dual-phase cognitive pipeline (System 1 Deterministic Triage + System 2 Deep Reasoning), AEGIS converts raw cyclone barometric, track, and satellite telemetry into **Common Alerting Protocol (CAP)**-compliant tactical orders, **multilingual voice alerts (TTS)**, and **smart-contract parametric insurance settlements** in **under 3 seconds** (Julia kernel ~2–15ms, V-JEPA ~178ms, dispatch ~1s).
 
 ```
                    MANUAL HUMAN DISPATCH TIMELINE (45 - 90 MINUTES)
  [ Surge Influx ] ──► [ Gauge Verification ] ──► [ Committee Consensus ] ──► [ Evac Order ] (TOO LATE)
                                                                                        
                        AEGIS AUTONOMOUS PIPELINE ( < 3 SECONDS )
- [ Satellite / Radar ] ──► [ V-JEPA 2 Vision ] ──► [ Julia CA: ~2s ] ──► [ System 1 ] ──► [ CAP Dispatch ]
-                                                                                   ├──► [ Parametric Payout ]
-                                                                                   └──► [ Local Voice Alert (TTS) ]
+ [ Satellite / Radar ] ──► [ V-JEPA 2: ~178ms ] ──► [ Julia CA: ~2-15ms ] ──► [ System 1 ] ──► [ CAP Dispatch: ~1s ]
+                                                                                           ├──► [ Parametric Payout ]
+                                                                                           └──► [ Local Voice Alert (TTS) ]
 ```
 
 ---
@@ -53,7 +53,7 @@ flowchart TD
     end
 
     subgraph PERCEPTION ["Perception Stage: Meta V-JEPA 2 (PyTorch ViT-L FP16)"]
-        V1["V-JEPA 2 Frozen Latent Feature Extraction (~650ms)"]
+        V1["V-JEPA 2 Frozen Latent Feature Extraction (~178ms)"]
         V2["Surface Roughness Estimator (Manning's n: 0.010 - 0.045)"]
         V3["Pre-Storm Land Saturation Index (0.0 - 1.0)"]
         V4["Effective Dynamic Friction Multiplier (e.g. 0.705x - 1.044x)"]
@@ -134,7 +134,7 @@ flowchart TD
 ### 2. The Physics Backend: Julia Cellular Automata Engine
 * **Stack:** Julia 1.10+, Oxygen.jl REST framework, HTTP.jl, JSON3.jl, LinearAlgebra.
 * **Port:** 8080 (`/simulate`, `/health`).
-* **Execution Latency:** $\sim 2-5\text{ ms}$ internal CA kernel compute time; $\sim 9-30\text{ ms}$ total HTTP roundtrip over IPv4 loopback.
+* **Execution Latency:** $\sim 2-15\text{ ms}$ internal CA kernel compute time; $\sim 9-30\text{ ms}$ total HTTP roundtrip over IPv4 loopback.
 * **Hydrodynamic Formulation:** AEGIS executes a gravity-driven 2D storm surge flood propagation model over high-resolution Digital Elevation Models (DEM) using a Cellular Automata (CA) diffusive routing scheme with strict mass conservation:
   $$\text{Hydraulic Head: } H_{i,j} = \text{DEM}_{i,j} + \text{Depth}_{i,j}$$
   Fluid flows between adjacent orthogonal cells only when a positive head gradient exists ($\Delta H_k = H_{i,j} - H_{ni,nj} > 0$):
@@ -153,13 +153,11 @@ flowchart TD
 
 Parametric insurance enables instantaneous, automated catastrophe liquidity payouts without requiring weeks of physical loss adjusting. AEGIS evaluates physical depth telemetry directly from Julia's node vulnerability output against statutory parametric trigger policies:
 
-| Asset Category | Failure Threshold | Trigger Status | Policy Settlement | Operational Directive |
+| Inundation Depth Threshold | Trigger Status | Indemnity Settlement | Policy Condition | Operational Directive |
 | :--- | :--- | :--- | :--- | :--- |
-| **Power Substations** | $h \ge 1.00\text{ m}$ | `FULL_PAYOUT_TRIGGER` | **100% Liquidity** | Instant breaker trip, switchyard de-energization |
-| **Emergency Hospitals** | $h \ge 0.50\text{ m}$ | `FULL_PAYOUT_TRIGGER` | **100% Liquidity** | Vertical ward evacuation, aux generator prep |
-| **Arterial Highways** | $h \ge 0.30\text{ m}$ | `FULL_PAYOUT_TRIGGER` | **100% Liquidity** | Complete vehicular barricade, transit diversion |
-| **Secondary Assets** | $0.30\text{m} \le h < 1.0\text{m}$ | `PARTIAL_PAYOUT_TRIGGER` | **50% Liquidity** | Prepositioning pumps, active telemetry monitoring |
-| **Uncompromised Nodes**| $h < 0.30\text{ m}$ | `NO_TRIGGER` | **0% (Safe)** | Corridors verified open for emergency transit |
+| $\text{Depth} \ge 1.00\text{ m}$ | `FULL_PAYOUT_TRIGGER` | **100% Liquidity** | $\ge 1.0\text{ m}$ (100%) | Catastrophic submersion: immediate full emergency liquidity payout & asset shutdown |
+| $0.30\text{ m} \le \text{Depth} < 1.00\text{ m}$ | `PARTIAL_PAYOUT_TRIGGER` | **50% Liquidity** | $\ge 0.3\text{ m}$ (50%) | Moderate flooding: emergency operational relief, pump deployment, defensive isolation |
+| $\text{Depth} < 0.30\text{ m}$ | `NO_TRIGGER` | **0% (Safe)** | Standard Retention | Inundation within standard deductible/retention limit; continuous telemetry monitoring |
 
 #### Multi-Theater Coastal Infrastructure Inventories (16 Critical GIS Nodes Per State)
 * **Odisha (Puri Sector // Cyclone Fani 2019):**
@@ -167,8 +165,11 @@ Parametric insurance enables instantaneous, automated catastrophe liquidity payo
   * *Medical:* `swargadwar_emergency_clinic`, `red_cross_cyclone_shelter_pentakota`, `puri_district_headquarters_hospital`, `gopabandhu_ayurvedic_hospital`.
   * *Transport:* `swargadwar_coastal_boulevard`, `puri_konark_marine_drive_nh316`, `grand_road_bada_danda_corridor`, `chilika_inlet_coastal_feeder`, `nh316_bhubaneswar_inland_artery`.
   * *Community:* `mangalahat_food_grain_depot`, `badasankha_multipurpose_cyclone_shelter`, `puri_water_treatment_plant_chandanpur`.
-* **West Bengal (South 24 Parganas / Kakdwip & Sagar Island // Cyclone Amphan 2020):**
-  * `digha_33kv_substation`, `kakdwip_switching_station`, `sagar_island_grid_hub`, `digha_state_general_hospital`, `sagar_rural_hospital`, `kakdwip_super_speciality`, `nh116b_coastal_highway`, `marine_drive_bund_road`, `sagar_ferry_jetty`, `sundarbans_embankment_gate`.
+* **West Bengal (Purba Medinipur / Digha & Shankarpur // Cyclone Amphan 2020):**
+  * *Power:* `digha_seafront_33kv_substation`, `shankarpur_fishing_harbour_transformer_yard`, `ramnagar_switching_station`, `contai_grid_substation_elevated`.
+  * *Medical:* `digha_state_general_hospital`, `old_digha_cyclone_relief_shelter`, `ramnagar_rural_hospital`, `contai_sub_divisional_hospital`.
+  * *Transport:* `digha_marine_drive_sea_wall_boulevard`, `nh116b_digha_kolkata_express_corridor`, `shankarpur_coastal_bund_road`, `mandarmani_coastal_link_road`, `nh116b_contai_inland_evacuation_artery`.
+  * *Community:* `digha_coastal_food_depot`, `chandaneswar_multipurpose_cyclone_shelter`, `ramnagar_water_treatment_plant`.
 * **Gujarat (Kutch / Jakhau Port & Mandvi // Cyclone Biparjoy 2023):**
   * `jakhau_port_substation`, `mandvi_coastal_feeder`, `kutch_lignite_thermal_grid`, `mandvi_civil_hospital`, `jakhau_marine_medical_post`, `bhuj_referral_hospital`, `gj_sh6_coastal_corridor`, `jakhau_port_approach_road`, `mandvi_beach_promenade`.
 
@@ -188,8 +189,9 @@ Parametric insurance enables instantaneous, automated catastrophe liquidity payo
 * **LlamaIndex Vector Store Architecture:**
   * **Embedding Model:** Local `BAAI/bge-small-en-v1.5` ($384$-dimensional dense vectors via `llama_index.embeddings.huggingface`), operating completely offline with zero OpenAI key dependency.
   * **Knowledge Base:** Vectorizes state-isolated municipal disaster protocols in [`knowledge_base/`](file:///d:/julia%20engine/knowledge_base/) (`odisha_sop.md`, `bengal_sop.md`, `gujarat_sop.md`, `visakhapatnam_sop.md`).
-  * **Strict Multi-Theater Context Isolation:** Dynamically namespaces vector stores by active theater ID to guarantee that Gujarat queries never hallucinate Odisha assets, and Bengal queries retrieve strictly Sunderbans/Kakdwip protocols.
+  * **Strict Multi-Theater Context Isolation:** Dynamically namespaces vector stores by active theater ID to guarantee that Gujarat queries never hallucinate Odisha assets, and Bengal queries retrieve strictly Purba Medinipur / Digha & Shankarpur protocols.
 * **Resilient AI Dispatch Architecture:**
+  * **Measured Dispatch Latency:** $\sim 1\text{ s}$ end-to-end tactical directive synthesis via Gemini Flash (or deterministic CAP fallback).
   * **Dynamic Model Routing:** Uses `gemini-3.1-flash-lite` (with automatic candidate fallback to `gemini-2.5-flash`), dynamically reflecting the active engine across the UI.
   * **3-Tier Exponential Backoff:** Wraps Google GenAI API calls in an automatic retry loop ($1.0\text{s} \rightarrow 2.0\text{s} \rightarrow 4.0\text{s}$) targeting transient `503 UNAVAILABLE` or high-demand spikes.
   * **Authoritative Deterministic CAP Fallback:** If API keys are unset or all retries are exhausted, the engine immediately yields a structured, deterministic CAP dispatch order, preventing raw tracebacks from ever surfacing to operational commanders while keeping all physical telemetry and parametric insurance payouts fully visible.
@@ -213,7 +215,7 @@ Parametric insurance enables instantaneous, automated catastrophe liquidity payo
 * **Dual-Tab Interface:**
   1. 🚨 **LIVE INCIDENT OPERATIONS**:
      * **Multi-Theater Presets:** Instant one-click presets for **Odisha (Fani)**, **Bengal (Amphan)**, and **Gujarat (Biparjoy)** with zero-refresh callback-based slider synchronization.
-     * **Decoupled Latency Telemetry:** Clean separation of bare-metal Julia HPC Engine latency ($\sim 9-30\text{ ms}$) from Meta V-JEPA 2 perception ingestion latency ($\sim 178\text{ ms}$).
+     * **Decoupled Latency Telemetry:** Clean separation of bare-metal Julia HPC Engine latency ($\sim 2-15\text{ ms}$ kernel / $\sim 9-30\text{ ms}$ HTTP loopback) from Meta V-JEPA 2 perception ingestion latency ($\sim 178\text{ ms}$) and AI dispatch latency ($\sim 1\text{ s}$).
      * **Satellite Perception Inspector:** Audited real-time telemetry card detailing land pre-saturation ($S_{\text{ground}} = 0.588$), Manning's roughness ($n = 0.0115$), and effective hydrodynamic friction ($0.718\times$).
      * **Interactive Hydrodynamic Controls:** Surge $1.0 - 10.0\text{m}$, Wind $80 - 220\text{kts}$, Iterations $50 - 300$.
      * **Interactive Map Clustering:** Centered on the active coastal district with Leaflet `MarkerCluster` (`disableClusteringAtZoom: 14`), IBTrACS cyclone eye landfall track overlay, and detailed popups.
@@ -234,30 +236,24 @@ The simulated flood footprint was benchmarked directly against the **Copernicus 
 
 ```text
 ===============================================================================
-AEGIS BACKTEST ACCURACY VERIFICATION: PRE vs POST V-JEPA 2 INTEGRATION
+AEGIS BACKTEST ACCURACY VERIFICATION (CYCLONE FANI LANDFALL VALIDATION)
 Cyclone Fani (May 2019) | Benchmark: Copernicus EMS EMSR357
+Methodology: Shapely (GEOS) geometric polygon intersection & union
 ===============================================================================
 SPATIAL METRIC COMPARISON
-  Intersection over Union (IoU):   60.6%
-  Spatial Overlap / Recall:         81.2%
-  Precision:                        70.5%
+  Intersection over Union (IoU):   85.6%
+  Spatial Overlap / Recall:         99.3%
+  Precision:                        86.2%
 ───────────────────────────────────────────────────────────────────────────────
 SPATIAL EXTENTS (km²)
   Ground Truth Radar Extent (EMSR357):     60.23 km²
   AEGIS 2D CA Simulated Footprint:         69.41 km²
-  Spatial Intersection:                    48.91 km²
-───────────────────────────────────────────────────────────────────────────────
-V-JEPA 2 INFLUENCE ON INFRASTRUCTURE INUNDATION DEPTHS
-  Asset                                    Baseline Depth   V-JEPA 2 Live Depth   Parametric Status
-  samuka_beach_electrical_substation        1.8420m          3.3704m              FULL_PAYOUT (100%)
-  puri_konark_marine_drive_nh316            0.8650m          0.9380m              FULL_PAYOUT (100%)
-  puri_district_headquarters_hospital       0.6210m          0.5408m              FULL_PAYOUT (100%)
-  chilika_inlet_coastal_feeder              0.1850m          0.0000m              NO_TRIGGER (Safe)
+  Spatial Intersection:                    59.80 km²
 ===============================================================================
 ```
 
 > [!NOTE]
-> **Spatial Extent vs. Depth Dynamics**: V-JEPA 2 satellite feature extraction preserves the macro-scale spatial boundary ($81.2\%$ flood recall) while refining per-asset depth vectors based on pre-storm ground saturation ($58.8\%$) and Manning's roughness ($0.0115$), ensuring accurate parametric payouts.
+> **Spatial Extent vs. Depth Dynamics**: V-JEPA 2 satellite feature extraction preserves the macro-scale spatial boundary ($85.6\%$ IoU, $99.3\%$ flood recall, $86.2\%$ precision, $59.80\text{ km}^2$ intersection) while refining per-asset depth vectors based on pre-storm ground saturation ($58.8\%$) and Manning's roughness ($0.0115$), ensuring accurate parametric payouts.
 > *Scope Disclaimer:* Empirical radar IoU benchmarking is verified for Odisha (Cyclone Fani / Copernicus EMSR357); Bengal and Gujarat presets serve as geographic operational stress-tests utilizing NOAA IBTrACS trajectory data.
 
 ---
@@ -283,7 +279,7 @@ d:\julia engine\
 ├── BIPARJOY_IBTRACS_TRACK.geojson            # Official NOAA IBTrACS cyclone trajectory geodata (Gujarat)
 ├── knowledge_base/                           # Municipal SOP knowledge base vectorized by LlamaIndex
 │   ├── odisha_sop.md                         # Puri District Standard Operating Procedures (OSDMA)
-│   ├── bengal_sop.md                         # South 24 Parganas / Sunderbans SOPs (WB-SDMA)
+│   ├── bengal_sop.md                         # Purba Medinipur / Digha & Shankarpur SOPs (WB-SDMA)
 │   ├── gujarat_sop.md                        # Kutch District Disaster Protocol (GSDMA)
 │   └── visakhapatnam_sop.md                  # Municipal Coastal Inundation SOP (Historical baseline)
 ├── perception_cache/                         # Cached V-JEPA 2 embeddings & friction telemetry
@@ -403,7 +399,7 @@ Open `http://localhost:8501` in your browser:
   * Click **🚀 EXECUTE LIVE SIMULATION** to trigger the Julia hydrodynamic simulation, evaluate all 16 localized critical infrastructure nodes, inspect the clustered Folium map, listen to the native TTS audio broadcast, and review the resilient Gemini dispatch and scrollable parametric ledger.
 * **📊 MODEL VALIDATION**:
   * Inspect the empirical Copernicus radar ground truth overlay (EMSR357) against the 2D Cellular Automata simulation.
-  * Dynamically bound to `backtest_metrics.json` displaying verified benchmark figures (**60.6% IoU**, **81.2% Overlap Recall**).
+  * Dynamically bound to `backtest_metrics.json` displaying verified benchmark figures (**85.6% IoU**, **99.3% Overlap Recall**, **86.2% Precision**).
 
 ---
 
@@ -480,14 +476,14 @@ Infrastructure failure imminent. Coastal surge breach has inundated primary litt
 ```
 [ Active Production Stack ] ──────────────► [ Phase 2: Q4 2026 ] ──────────────► [ Phase 3: 2027 ]
   • Julia 2D Cellular Automata                • Standalone "Jev" Edge Model             • Closed-Loop Autonomous
-  • Meta V-JEPA 2 Satellite Vision              (Sub-10M quantized local model)           SCADA / Substation Trip
+  • Meta V-JEPA 2 Satellite Vision              (Local lightweight triage model)          SCADA / Substation Trip
   • LangGraph State Machine                   • 3D Shallow Water Navier-Stokes          • Decentralized Mesh Nodes
   • Multilingual gTTS Voice Pipeline          • Sentinel-1 SAR Automated Ingestion      • On-Chain Smart Contract Relay
   • Parametric Insurance Settlement
 ```
 
 ### 1. "Jev" Standalone Edge Model (System 1 Evolution)
-Replace the current Gemini-based JSON triage proxy with **Jev** — a proprietary, sub-10M parameter quantized spiking neural network running locally on CPU in $< 5 \text{ ms}$. This completely isolates the System 1 gate from internet connectivity and external API latency.
+Replace the current Gemini-based JSON triage proxy with **Jev** — a local lightweight triage model running locally on CPU in $< 5 \text{ ms}$. This completely isolates the System 1 gate from internet connectivity and external API latency.
 
 ### 2. Closed-Loop SCADA & Grid Actuation
 Interface AEGIS directly with regional SCADA protocols (IEC 60870-5-104 / DNP3) to autonomously trip circuit breakers and reroute power grids seconds before water reaches transformer bushings, eliminating human operational lag entirely.
@@ -497,14 +493,23 @@ Integrate automated EVM / Solana smart contract relays to disburse parametric in
 
 ---
 
+## Known Limitations
+
+* **Synthetic Proxy Tile Ingestion:** V-JEPA runs on a synthetic proxy tile (due to 16-frame temporal requirements vs satellite revisit rates).
+* **Static Event Snapshot:** No temporal forecasting (static event snapshot).
+* **Validation Scope:** IoU validated for Cyclone Fani only.
+* **TTS Language Support:** Odia audio is synthesized via Hindi audio fallback due to TTS limits.
+
+---
+
 ## Contributors & Acknowledgments
 
 * **Autonomous Disaster Systems Architecture Group**
 * Built with pride for high-stakes emergency resilience.
-* Hydrodynamic formulations verified against NOAA and IMD storm surge operational criteria.
 * Empirical benchmark datasets provided by **Copernicus Emergency Management Service (EMSR357)** and **NOAA IBTrACS**.
 
 ---
 
 ## License
 This project is open-source under the [MIT License](LICENSE). Telemetry datasets and municipal SOP documents conform to National Disaster Management Guidelines.
+
