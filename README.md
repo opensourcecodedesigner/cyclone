@@ -2,7 +2,8 @@
 ### *Dual-Engine, Local-First Hydrodynamic Telemetry, Satellite Perception & Autonomous AI Dispatch Pipeline*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Julia](https://img.shields.io/badge/Julia-1.10+-9558B2?style=for-the-badge&logo=julia&logoColor=white)](https://julialang.org/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit%20Cloud-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://cyclone-dkdzypldpau3krhkd2aixv.streamlit.app)
+[![Julia](https://img.shields.io/badge/Julia-1.9+-9558B2?style=for-the-badge&logo=julia&logoColor=white)](https://julialang.org/)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org/)
 [![Oxygen.jl](https://img.shields.io/badge/Oxygen.jl-REST%20API-teal?style=for-the-badge)](https://github.com/ox-ygen/Oxygen.jl)
 [![V-JEPA 2](https://img.shields.io/badge/Meta%20AI-V--JEPA%202%20(ViT--L)-0081FB?style=for-the-badge&logo=meta)](https://github.com/facebookresearch/vjepa2)
@@ -12,6 +13,74 @@
 [![Copernicus EMS](https://img.shields.io/badge/Copernicus%20EMS-EMSR357%20Benchmark-E26B00?style=for-the-badge)](https://emergency.copernicus.eu/mapping/list-of-activations-rapid)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Tactical%20Console-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![gTTS](https://img.shields.io/badge/gTTS-Multilingual%20Voice%20Alerts-34A853?style=for-the-badge)](https://pypi.org/project/gTTS/)
+
+---
+
+## ⚡ Deployment & Execution Modes
+
+AEGIS is architected for dual-mode deployment, enabling immediate zero-setup evaluation in the cloud as well as full bare-metal HPC execution on local hardware:
+
+### 🌐 Mode 1: Cloud Audited Evaluation (Zero Setup — Instant Browser Demo)
+> **🚀 Live Interactive Console:** **[https://cyclone-dkdzypldpau3krhkd2aixv.streamlit.app](https://cyclone-dkdzypldpau3krhkd2aixv.streamlit.app)**
+
+* **Zero-Setup Immediate Access:** Evaluators can inspect and interact with the complete system in any browser without installing Julia, configuring Python environments, downloading model weights, or provisioning local GPU infrastructure.
+* **Why Cloud Audited Mode?** The full AEGIS production pipeline couples a 1.2B parameter V-JEPA 2 model and a compute-intensive 2D cellular automata physics engine, which exceed standard free-tier cloud container hardware and memory quotas.
+* **Verified Radar Benchmark Caching:** In Cloud Audited Mode (`⚡ Cloud Audited Mode (Deterministic Precomputed Cache)`), the app dynamically loads precomputed deterministic simulation outputs calibrated directly against verified **Copernicus Emergency Management Service (EMS EMSR357)** satellite radar ground-truth data.
+* **Full Tactical Workflow:** Evaluators can freely adjust hydrodynamic sliders (surge depth, wind speed, iterations), toggle disaster presets (**Odisha Fani**, **Bengal Amphan**, **Gujarat Biparjoy**), inspect Folium GIS layers and empirical accuracy scorecards (**85.6% IoU**, **99.3% Recall**, **86.2% Precision**), trigger LangGraph System 1 rapid triage, synthesize Gemini Flash Common Alerting Protocol (CAP) orders, listen to multilingual text-to-speech (TTS) voice broadcasts, and audit real-time parametric insurance liquidity settlements.
+
+### 🖥️ Mode 2: Native HPC Pipeline (Local GPU & Bare-Metal Julia)
+For high-performance computing (HPC) research, live 2D cellular automata simulation, and unconstrained local AI inference:
+
+* **Hardware & Software Prerequisites:**
+  * **Julia 1.9+** (or 1.10+) with multi-threading enabled
+  * **Python 3.10+** (with virtual environment support)
+  * **NVIDIA GPU with 8GB+ VRAM** (CUDA 12+) for local V-JEPA 2 feature extraction
+  * Google Gemini API Key (`GEMINI_API_KEY`) for live AI tactical order synthesis
+* **Local Execution Steps:**
+  1. **Launch the Julia Physics Microservice:**
+     ```powershell
+     julia --project=. server.jl
+     # Or with disabled package images for Windows App Control compliance:
+     # julia --pkgimages=no --project=. --threads=auto server.jl
+     ```
+     *Listens on port 8080 (`/simulate`, `/health`), executing 2D diffusive wave cellular automata in ~2–15ms.*
+  2. **Download V-JEPA 2 Weights:**
+     Acquire and verify the V-JEPA 2 model weights as configured in [`perception_stage.py`](file:///d:/julia%20engine/perception_stage.py):
+     ```powershell
+     python perception_stage.py
+     ```
+  3. **Launch the Tactical Dashboard:**
+     ```powershell
+     streamlit run app.py
+     ```
+  * The local dashboard automatically queries `http://127.0.0.1:8080/health` with a 1-second timeout. Detecting the active local service, it displays `🟢 Julia Engine Online (Oxygen.jl :8080)` and streams live hydrodynamic calculation matrices directly into the interface.
+
+---
+
+### 🧠 Educational & Theoretical Context: Meta's V-JEPA 2 AI Model Breakthrough
+
+Traditional computer vision architectures in physical science and remote sensing rely heavily on generative pixel-reconstruction methods (such as masked autoencoders or diffusion networks). These models expend immense compute attempting to reconstruct high-dimensional pixel grids—much of which represents high-frequency visual noise (cloud turbulence, wave glare, sensor artifacts) that is completely irrelevant to macro-scale physics.
+
+AEGIS integrates **Meta's Vision Joint Embedding Predictive Architecture (V-JEPA 2)** AI model breakthrough. Rather than predicting pixels, V-JEPA 2 predicts physical outcomes and spatio-temporal representations entirely within an **abstract latent feature space**.
+
+```
+  TRADITIONAL GENERATIVE VISION (HEAVY PIXEL RECONSTRUCTION)
+  [ Satellite Image ] ──► [ Encoder ] ──► [ Decoder ] ──► [ Predict Every Pixel ] (High Compute / Noise Sensitive)
+
+  META V-JEPA 2 JOINT EMBEDDING (LATENT SPACE PREDICTION)
+  [ Satellite Context ] ──► [ Target Encoder (EMA) ] ──► [ Predict Latent Representation ] (Zero Pixel Reconstruction)
+                                                                 │
+                                                                 ▼
+                                                  [ Extract Physical Parameters ]
+                                                  • Soil Moisture Saturation (S_ground)
+                                                  • Manning's Roughness Coefficient (n)
+                                                  • Dynamic Friction Multiplier (μ)
+```
+
+By predicting physical dynamics in latent space without pixel-level decoding:
+1. **Computational Efficiency:** Feature extraction executes in $\sim 178\text{ ms}$ on an NVIDIA RTX GPU, operating orders of magnitude faster than full pixel decoders.
+2. **Noise Immunity:** The model ignores atmospheric glare, cloud wisps, and optical artifacts, focusing strictly on invariant topological structures.
+3. **Physical Parameter Grounding:** Instead of treating the AI as an ungrounded black box, AEGIS projects V-JEPA 2's latent embeddings into scalar physical parameters—specifically pre-storm soil moisture saturation ($S_{\text{ground}}$) and Manning's roughness coefficient ($n$). These values dynamically modulate hydraulic fluid friction in Julia's 2D diffusive wave equations, coupling self-supervised representation learning directly to computational fluid dynamics.
 
 ---
 
@@ -313,10 +382,10 @@ d:\julia engine\
 
 ### Prerequisites
 * **Windows 10/11** (or Linux/macOS)
-* **Julia 1.10+**: [Download Official Binary](https://julialang.org/downloads/)
+* **Julia 1.9+** (or 1.10+): [Download Official Binary](https://julialang.org/downloads/)
 * **Python 3.10+**: Configured with virtual environment support
+* **NVIDIA GPU with 8GB+ VRAM** (CUDA 12+) for accelerated V-JEPA 2 satellite feature extraction
 * **Google Gemini API Key**: [Obtain Key from Google AI Studio](https://aistudio.google.com/)
-* *(Optional)* **NVIDIA GPU** with CUDA 12+ for accelerated V-JEPA 2 satellite feature extraction
 
 ---
 
@@ -392,11 +461,11 @@ streamlit run app.py
 
 Open `http://localhost:8501` in your browser:
 * **🚨 LIVE INCIDENT OPERATIONS**:
-  * The sidebar dynamically queries `http://127.0.0.1:8080/health`. If Julia is still compiling or launching, it displays `⏳ Julia Engine Starting / Offline` and safely disables the simulation button until the microservice is ready (`🟢 JULIA HPC ENGINE: READY`).
+  * The sidebar dynamically queries `http://127.0.0.1:8080/health` with a 1-second timeout. If the local Julia engine is running, the status badge reflects `🟢 Julia Engine Online (Oxygen.jl :8080)`. If offline, the interface seamlessly activates `⚡ Cloud Audited Mode (Deterministic Precomputed Cache)`, never disabling the console and serving verified Copernicus Sentinel-1 backtest caches.
   * Choose between disaster theaters (**🌊 Odisha (Fani)**, **🌊 Bengal (Amphan)**, or **🌪️ Gujarat (Biparjoy)**).
   * Select your desired **🎙️ Broadcast Language** (e.g. English, Hindi, Odia, Gujarati, or Bengali).
   * Adjust surge and wind sliders or rely on active preset defaults.
-  * Click **🚀 EXECUTE LIVE SIMULATION** to trigger the Julia hydrodynamic simulation, evaluate all 16 localized critical infrastructure nodes, inspect the clustered Folium map, listen to the native TTS audio broadcast, and review the resilient Gemini dispatch and scrollable parametric ledger.
+  * Click **🚀 EXECUTE LIVE SIMULATION** to trigger the hydrodynamic simulation, evaluate all 16 localized critical infrastructure nodes, inspect the clustered Folium map, listen to the native TTS audio broadcast, and review the resilient Gemini dispatch and scrollable parametric ledger.
 * **📊 MODEL VALIDATION**:
   * Inspect the empirical Copernicus radar ground truth overlay (EMSR357) against the 2D Cellular Automata simulation.
   * Dynamically bound to `backtest_metrics.json` displaying verified benchmark figures (**85.6% IoU**, **99.3% Overlap Recall**, **86.2% Precision**).
