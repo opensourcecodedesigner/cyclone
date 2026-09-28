@@ -670,13 +670,13 @@
       if (val === 0 || val === '0') {
         blendReadout.textContent = 'Simulation Only · 100% Numerical Physics';
       } else if (val < 45) {
-        blendReadout.textContent = `Simulation Bias (${100 - val}% Sim / ${val}% Radar)`;
+        blendReadout.textContent = `Simulation Bias (${100 - val}% Sim / ${val}% SAR)`;
       } else if (val <= 55) {
         blendReadout.textContent = 'Composite View · 85.6% Spatial IoU Overlap';
       } else if (val < 100) {
-        blendReadout.textContent = `Ground Truth Bias (${100 - val}% Sim / ${val}% Radar)`;
+        blendReadout.textContent = `Ground Truth Bias (${100 - val}% Sim / ${val}% SAR)`;
       } else {
-        blendReadout.textContent = 'EMSR357 Radar Only · 100% Ground Truth';
+        blendReadout.textContent = 'Sentinel-1 SAR Only · 100% Ground Truth';
       }
     }
 
