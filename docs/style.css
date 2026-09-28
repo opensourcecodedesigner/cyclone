@@ -959,6 +959,11 @@ main {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.spec-sheet.spec-sheet-3,
+.spec-sheet:has(> .spec-item:nth-child(3):last-child) {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .spec-item {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -1212,7 +1217,7 @@ main {
 
 .stats-matrix {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
