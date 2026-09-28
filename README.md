@@ -1,5 +1,5 @@
-# AEGIS: Autonomous Emergency Generation & Intelligence System
-### *Dual-Engine, Local-First Hydrodynamic Telemetry, Satellite Perception & Autonomous AI Dispatch Pipeline*
+# AEGIS: AI-Assisted Emergency Generation & Intelligence System
+### *Dual-Engine, Local-First Hydrodynamic Telemetry, Satellite Perception & Human-Authorized AI Dispatch Pipeline*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit%20Cloud-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://cyclone-dkdzypldpau3krhkd2aixv.streamlit.app)
@@ -24,9 +24,9 @@ AEGIS is architected for dual-mode deployment, enabling immediate zero-setup eva
 > **🚀 Live Interactive Console:** **[https://cyclone-dkdzypldpau3krhkd2aixv.streamlit.app](https://cyclone-dkdzypldpau3krhkd2aixv.streamlit.app)**
 
 * **Zero-Setup Immediate Access:** Evaluators can inspect and interact with the complete system in any browser without installing Julia, configuring Python environments, downloading model weights, or provisioning local GPU infrastructure.
-* **Why Cloud Audited Mode?** The full AEGIS production pipeline couples a 1.2B parameter V-JEPA 2 model and a compute-intensive 2D cellular automata physics engine, which exceed standard free-tier cloud container hardware and memory quotas.
-* **Verified Radar Benchmark Caching:** In Cloud Audited Mode (`⚡ Cloud Audited Mode (Deterministic Precomputed Cache)`), the app dynamically loads precomputed deterministic simulation outputs calibrated directly against verified **Copernicus Emergency Management Service (EMS EMSR357)** satellite radar ground-truth data.
-* **Full Tactical Workflow:** Evaluators can freely adjust hydrodynamic sliders (surge depth, wind speed, iterations), toggle disaster presets (**Odisha Fani**, **Bengal Amphan**, **Gujarat Biparjoy**), inspect Folium GIS layers and empirical accuracy scorecards (**85.6% IoU**, **99.3% Recall**, **86.2% Precision**), trigger LangGraph System 1 rapid triage, synthesize Gemini Flash Common Alerting Protocol (CAP) orders, listen to multilingual text-to-speech (TTS) voice broadcasts, and audit real-time parametric insurance liquidity settlements.
+* **Why Cloud Audited Mode?** The full AEGIS production pipeline couples a 303.9M parameter V-JEPA 2 ViT-L model and a compute-intensive 2D cellular automata physics engine, which exceed standard free-tier cloud container hardware and memory quotas.
+* **Verified Radar Benchmark Caching:** In Cloud Audited Mode (`⚡ Cloud Audited Mode (Deterministic Precomputed Cache)`), the app dynamically loads precomputed deterministic simulation outputs benchmarked directly against verified **Copernicus Emergency Management Service (EMS EMSR357)** satellite radar ground-truth data.
+* **Full Tactical Workflow:** Evaluators can freely adjust hydrodynamic sliders (surge depth, wind speed, iterations), toggle disaster presets (**Odisha Fani**, **Bengal Amphan**, **Gujarat Biparjoy**), inspect Folium GIS layers and empirical accuracy scorecards (**85.6% IoU**, **86.2% Precision**, **99.3% Recall**, **≈92.3% F1**), trigger LangGraph System 1 rapid triage, synthesize Gemini Flash Common Alerting Protocol (CAP) orders, listen to multilingual text-to-speech (TTS) voice broadcasts, and audit real-time parametric insurance liquidity settlements.
 
 ### 🖥️ Mode 2: Native HPC Pipeline (Local GPU & Bare-Metal Julia)
 For high-performance computing (HPC) research, live 2D cellular automata simulation, and unconstrained local AI inference:
@@ -67,20 +67,26 @@ AEGIS integrates **Meta's Vision Joint Embedding Predictive Architecture (V-JEPA
   TRADITIONAL GENERATIVE VISION (HEAVY PIXEL RECONSTRUCTION)
   [ Satellite Image ] ──► [ Encoder ] ──► [ Decoder ] ──► [ Predict Every Pixel ] (High Compute / Noise Sensitive)
 
-  META V-JEPA 2 JOINT EMBEDDING (LATENT SPACE PREDICTION)
-  [ Satellite Context ] ──► [ Target Encoder (EMA) ] ──► [ Predict Latent Representation ] (Zero Pixel Reconstruction)
-                                                                 │
-                                                                 ▼
-                                                  [ Extract Physical Parameters ]
-                                                  • Soil Moisture Saturation (S_ground)
-                                                  • Manning's Roughness Coefficient (n)
-                                                  • Dynamic Friction Multiplier (μ)
+  META V-JEPA 2 JOINT EMBEDDING (LATENT SPACE REPRESENTATION)
+  [ Satellite Context Tile ] ──► [ Target Encoder (EMA) ] ──► [ 1568 Latent Tokens × 1024 Dim ]
+                                                                      │
+                                                                      ▼
+                                                       [ Feature Extraction & Pooling ]
+                                                                      │
+                                                                      ▼
+                                                       [ Geomorphic Prior Projection Head ]
+                                                       • Soil Moisture Saturation (S_ground)
+                                                       • Manning's Roughness Coefficient (n)
+                                                       • Dynamic Friction Multiplier (μ)
+                                                                      │
+                                                                      ▼
+                                                       [ Julia 2D CA Physical Simulation ]
 ```
 
-By predicting physical dynamics in latent space without pixel-level decoding:
+By extracting physical dynamics in latent space without pixel-level decoding:
 1. **Computational Efficiency:** Feature extraction executes in $\sim 178\text{ ms}$ on an NVIDIA RTX GPU, operating orders of magnitude faster than full pixel decoders.
 2. **Noise Immunity:** The model ignores atmospheric glare, cloud wisps, and optical artifacts, focusing strictly on invariant topological structures.
-3. **Physical Parameter Grounding:** Instead of treating the AI as an ungrounded black box, AEGIS projects V-JEPA 2's latent embeddings into scalar physical parameters—specifically pre-storm soil moisture saturation ($S_{\text{ground}}$) and Manning's roughness coefficient ($n$). These values dynamically modulate hydraulic fluid friction in Julia's 2D diffusive wave equations, coupling self-supervised representation learning directly to computational fluid dynamics.
+3. **Physical Parameter Grounding:** Instead of treating the AI as an ungrounded black box or claiming unverified empirical calibration, AEGIS maps V-JEPA 2's latent representations into hydrodynamic simulation parameters using a geomorphic prior parameterization—specifically pre-storm soil moisture saturation ($S_{\text{ground}}$) and Manning's roughness coefficient ($n$). These representations influence the physical simulation parameters and therefore affect asset-level simulation outputs (depth vectors and parametric trigger evaluations) in Julia's 2D diffusive wave equations.
 
 ---
 
@@ -91,16 +97,16 @@ During catastrophic tropical cyclones (Category 4+ Super Cyclones), municipal em
 * This introduces an unacceptable **45 to 90-minute decision latency window**.
 * In dynamic surge events, floodwaters propagate inland at rates exceeding **0.5 to 1.2 m/s**, severing evacuation corridors, submerging high-voltage transmission switchyards, and flooding hospital ground wards before the first official alert is ratified.
 
-**AEGIS (Autonomous Emergency Generation & Intelligence System)** eliminates this bottleneck. Designed as a dual-engine, local-first disaster intelligence pipeline, AEGIS directly couples **satellite computer vision perception**, **high-performance physical hydrodynamics**, and **autonomous multi-tier AI orchestration**. 
+**AEGIS (AI-Assisted Emergency Generation & Intelligence System)** eliminates this bottleneck. Designed as a dual-engine, local-first disaster intelligence pipeline, AEGIS directly couples **satellite computer vision perception**, **high-performance physical hydrodynamics**, and **multi-tier AI orchestration with human authorization**. 
 
-By executing 2D cellular automata inundation routing at native bare-metal speeds and delegating triage to a dual-phase cognitive pipeline (System 1 Deterministic Triage + System 2 Deep Reasoning), AEGIS converts raw cyclone barometric, track, and satellite telemetry into **Common Alerting Protocol (CAP)**-compliant tactical orders, **multilingual voice alerts (TTS)**, and **smart-contract parametric insurance settlements** in **under 3 seconds** (Julia kernel ~2–15ms, V-JEPA ~178ms, dispatch ~1s).
+By executing 2D cellular automata inundation routing at native bare-metal speeds and delegating triage to a dual-phase cognitive pipeline (System 1 Deterministic Triage + System 2 Deep Reasoning), AEGIS converts raw cyclone barometric, track, and satellite telemetry into **Common Alerting Protocol (CAP)**-compliant tactical advisories, **multilingual voice alerts (TTS)**, and **smart-contract parametric insurance assessments** in **under 3 seconds** (Julia kernel ~2–15ms, V-JEPA ~178ms, dispatch ~1s), ready for immediate human authorization.
 
 ```
                    MANUAL HUMAN DISPATCH TIMELINE (45 - 90 MINUTES)
  [ Surge Influx ] ──► [ Gauge Verification ] ──► [ Committee Consensus ] ──► [ Evac Order ] (TOO LATE)
                                                                                        
-                       AEGIS AUTONOMOUS PIPELINE ( < 3 SECONDS )
- [ Satellite / Radar ] ──► [ V-JEPA 2: ~178ms ] ──► [ Julia CA: ~2-15ms ] ──► [ System 1 ] ──► [ CAP Dispatch: ~1s ]
+                       AEGIS DECISION PIPELINE ( < 3 SECONDS )
+ [ Satellite / Radar ] ──► [ V-JEPA 2: ~178ms ] ──► [ Julia CA: ~2-15ms ] ──► [ System 1 ] ──► [ CAP Advisory: ~1s ] ──► [ Human Authorization ]
                                                                                            ├──► [ Parametric Payout ]
                                                                                            └──► [ Local Voice Alert (TTS) ]
 ```
@@ -185,18 +191,34 @@ flowchart TD
 
 ---
 
+### ⚖️ Clear Separation of Concerns: Physics vs. AI
+
+To preserve scientific rigor, operational reliability, and safety, AEGIS enforces an uncompromising architectural separation between physics modeling, visual perception, procedural retrieval, language reasoning, and human command:
+
+| Subsystem | Core Technical Responsibility | Explicit Non-Roles & Boundaries |
+| :--- | :--- | :--- |
+| **Julia Physics Engine** (`server.jl`) | **Determines numerical flood/water state** and executes 2D Cellular Automata hydrodynamic propagation over DEM rasters with strict mass conservation. | Does not generate text alerts, summarize reports, or perform language reasoning. |
+| **Meta V-JEPA 2** (`perception_stage.py`) | **Provides visual representations & features** from satellite context; mapped via geomorphic prior parameterization to soil saturation and Manning's roughness grids. | Does not simulate fluid dynamics; representations influence simulation parameters and therefore affect asset-level simulation outputs without claiming learned empirical calibration. |
+| **LlamaIndex RAG** (`main.py`) | **Retrieves verified Standard Operating Procedures (SOPs)** and municipal disaster protocols strictly isolated by operational theater. | Does not compute numerical inundation or make dispatch decisions. |
+| **Google Gemini Flash** (`main.py`) | **Synthesizes structured tactical advisory directives** conforming to Common Alerting Protocol (CAP) from numerical simulation telemetry + retrieved SOPs. | **Does NOT predict flood depth**; **does NOT act as the source of numerical flood simulation**. |
+| **Human Incident Commander** | **Authorizes all emergency dispatch directives and alert dissemination.** | AEGIS is an AI-assisted emergency decision pipeline; zero unverified kinetic or operational dispatch occurs without explicit human authorization. |
+
+---
+
 ## Core Subsystems Deep Dive
 
 ### 1. Perception Stage: Meta V-JEPA 2 (PyTorch)
-* **File:** [`perception_stage.py`](file:///d:/julia%20engine/perception_stage.py)
+* **File:** [`perception_stage.py`](file:///d:/julia%20engine/perception_stage.py) & [`vjepa_projector.py`](file:///d:/julia%20engine/vjepa_projector.py)
 * **Stack:** PyTorch 2.6+, CUDA 12.8, `facebookresearch/vjepa2` PyTorch Hub.
 * **Context Encoder:** Vision Joint Embedding Predictive Architecture Large (`vjepa2_vit_large` / ViT-L, 303.9M parameters, frozen `requires_grad=False`, FP16 precision).
-* **Pretraining Architecture:** Uses an Exponential Moving Average (EMA) target encoder to guide latent predictive representations of spatio-temporal blocks without pixel-level reconstruction or information maximization loss.
+* **Pretraining Architecture:** Uses an Exponential Moving Average (EMA) target encoder to guide latent predictive representations of spatio-temporal blocks without pixel-level reconstruction.
 * **Execution Latency:** $\sim 178\text{ ms}$ feature extraction on NVIDIA RTX GPU; VRAM footprint $\sim 2.1\text{ GB}$.
-* **Physical Parameter Derivation:** Instead of feeding black-box pixel values into the hydrodynamic simulation, V-JEPA 2 acts as a self-supervised physical feature encoder:
-  * **Pre-Storm Land Saturation ($S_{\text{ground}}$):** Quantifies soil water absorption capacity from optical/SAR latent representations.
-  * **Surface Roughness ($n_{\text{Manning}}$):** Maps coastal built-up density, mangroves, and terrain to fluid friction coefficients ($0.010 - 0.045$).
-  * **Effective Friction Multiplier:** Dynamically scales the Julia solver's effective iteration count ($N_{\text{iter}} = \text{round}(N_{\text{base}} \times \mu_{\text{friction}})$), realistically adjusting inland water accumulation at critical infrastructure points without distorting macro-scale coastline boundaries.
+* **Real Operational Flow:**
+  $$\text{V-JEPA Latent Representation } (1568 \times 1024) \longrightarrow \text{Spatial Pooling } (14 \times 14) \longrightarrow \text{Parameter Projection Head } (100 \times 100) \longrightarrow \text{Julia CA Physics Simulation}$$
+* **Parameter Projection Implementation:** 
+  * The projection head (`ParameterProjectionHead`) is a convolutional upsampling network mapping pooled latent features to 2D grids for Soil Saturation ($S_{\text{ground}} \in [0.0, 1.0]$) and Manning's roughness ($n \in [0.01, 0.15]$).
+  * **Methodology Disclosure:** The projection weights are parameterized against synthetic coastal geomorphic spatial priors (inland moisture attenuation gradients and littoral roughness envelopes). It is an engineered representation-to-parameter mapping, **not presented as a scientifically calibrated learned physical model** trained on paired empirical soil moisture ground truth.
+  * **Defensible Physical Claim:** V-JEPA representations influence the physical simulation parameters (ground saturation and Manning's roughness) and therefore affect asset-level simulation outputs (per-node flood depths and parametric insurance trigger evaluations) without claiming to alter or improve macro-scale radar flood extent boundaries.
 
 ---
 
@@ -311,19 +333,22 @@ Methodology: Shapely (GEOS) geometric polygon intersection & union
 ===============================================================================
 SPATIAL METRIC COMPARISON
   Intersection over Union (IoU):   85.6%
-  Spatial Overlap / Recall:         99.3%
-  Precision:                        86.2%
+  Spatial Precision:               86.2%
+  Spatial Overlap / Recall:        99.3%
+  Harmonic F1 Score:               92.3%
 ───────────────────────────────────────────────────────────────────────────────
 SPATIAL EXTENTS (km²)
-  Ground Truth Radar Extent (EMSR357):     60.23 km²
-  AEGIS 2D CA Simulated Footprint:         69.41 km²
+  Reference Area (EMSR357 Truth):          60.23 km²
+  AEGIS Simulated Footprint:               69.41 km²
   Spatial Intersection:                    59.80 km²
 ===============================================================================
 ```
 
 > [!NOTE]
-> **Spatial Extent vs. Depth Dynamics**: V-JEPA 2 satellite feature extraction preserves the macro-scale spatial boundary ($85.6\%$ IoU, $99.3\%$ flood recall, $86.2\%$ precision, $59.80\text{ km}^2$ intersection) while refining per-asset depth vectors based on pre-storm ground saturation ($58.8\%$) and Manning's roughness ($0.0115$), ensuring accurate parametric payouts.
-> *Scope Disclaimer:* Empirical radar IoU benchmarking is verified for Odisha (Cyclone Fani / Copernicus EMSR357); Bengal and Gujarat presets serve as geographic operational stress-tests utilizing NOAA IBTrACS trajectory data.
+> **Defensible Accuracy & Provenance Baseline**:
+> * **Metric Consistency**: Calculated from precision ($P = 86.2\%$) and recall ($R = 99.3\%$), the harmonic mean yields $F_1 = \frac{2PR}{P + R} \approx 92.3\%$, matching the underlying Shapely geometric integration ($\text{IoU} = 85.6\%$, $59.80\text{ km}^2$ intersection).
+> * **Spatial Extent vs. Depth Dynamics**: V-JEPA 2 representations influence simulation parameters ($S_{\text{ground}} = 58.8\%$, $n = 0.0115$), refining per-asset depth vectors and parametric payouts while Julia's cellular automata physics preserves macro-scale coastal conservation.
+> * **Geographic Validation Scope**: Quantitative historical flood-extent validation is demonstrated exclusively for Odisha (Cyclone Fani / Copernicus EMSR357). West Bengal (Amphan) and Gujarat (Biparjoy) presets serve as forward geographic operational scenario / stress-test configurations utilizing NOAA IBTrACS trajectory data; they do not possess equivalent historical radar ground-truth validation.
 
 ---
 
@@ -468,7 +493,7 @@ Open `http://localhost:8501` in your browser:
   * Click **🚀 EXECUTE LIVE SIMULATION** to trigger the hydrodynamic simulation, evaluate all 16 localized critical infrastructure nodes, inspect the clustered Folium map, listen to the native TTS audio broadcast, and review the resilient Gemini dispatch and scrollable parametric ledger.
 * **📊 MODEL VALIDATION**:
   * Inspect the empirical Copernicus radar ground truth overlay (EMSR357) against the 2D Cellular Automata simulation.
-  * Dynamically bound to `backtest_metrics.json` displaying verified benchmark figures (**85.6% IoU**, **99.3% Overlap Recall**, **86.2% Precision**).
+  * Dynamically bound to `backtest_metrics.json` displaying verified benchmark figures (**85.6% IoU**, **86.2% Precision**, **99.3% Overlap Recall**, **≈92.3% F1**).
 
 ---
 
@@ -489,7 +514,7 @@ python backtest_fani.py
 **AEGIS DISASTER COMMAND // SYSTEM ID: OSDMA-2026-ALPHA**
 **STATUS:** ACTIVE CYCLONE EMERGENCY
 **METEOROLOGICAL DATA:** PEAK SURGE 5.0M // SUSTAINED WIND 135 KNOTS
-**COMMANDER:** CHIEF AUTONOMOUS INCIDENT COMMANDER (AEGIS)
+**COMMANDER:** TACTICAL INCIDENT ADVISORY PIPELINE (AEGIS — HUMAN AUTHORIZATION REQUIRED)
 
 ---
 
@@ -533,7 +558,7 @@ Infrastructure failure imminent. Coastal surge breach has inundated primary litt
 *   **Mission Profile**: High-clearance amphibious transit & rapid triage extraction.
 *   **Target**: **puri_district_headquarters_hospital** & **red_cross_cyclone_shelter_pentakota**.
 *   **Objective**: Rapid casualty extraction and transport to elevated relief facilities.
-*   **Authority**: OSDMA-2026 // Autonomous Incident Override Active.
+*   **Authority**: OSDMA-2026 // Advisory Directive Pending Human Authorization.
 
 **END OF DISPATCH // AEGIS COMMAND**
 ```
@@ -544,18 +569,18 @@ Infrastructure failure imminent. Coastal surge breach has inundated primary litt
 
 ```
 [ Active Production Stack ] ──────────────► [ Phase 2: Q4 2026 ] ──────────────► [ Phase 3: 2027 ]
-  • Julia 2D Cellular Automata                • Standalone "Jev" Edge Model             • Closed-Loop Autonomous
-  • Meta V-JEPA 2 Satellite Vision              (Local lightweight triage model)          SCADA / Substation Trip
+  • Julia 2D Cellular Automata                • Standalone "Jev" Edge Model             • SCADA / Substation Trip
+  • Meta V-JEPA 2 Satellite Vision              (Local lightweight triage model)          Integration (Human Supervision)
   • LangGraph State Machine                   • 3D Shallow Water Navier-Stokes          • Decentralized Mesh Nodes
   • Multilingual gTTS Voice Pipeline          • Sentinel-1 SAR Automated Ingestion      • On-Chain Smart Contract Relay
-  • Parametric Insurance Settlement
+  • Parametric Insurance Assessment
 ```
 
 ### 1. "Jev" Standalone Edge Model (System 1 Evolution)
 Replace the current Gemini-based JSON triage proxy with **Jev** — a local lightweight triage model running locally on CPU in $< 5 \text{ ms}$. This completely isolates the System 1 gate from internet connectivity and external API latency.
 
-### 2. Closed-Loop SCADA & Grid Actuation
-Interface AEGIS directly with regional SCADA protocols (IEC 60870-5-104 / DNP3) to autonomously trip circuit breakers and reroute power grids seconds before water reaches transformer bushings, eliminating human operational lag entirely.
+### 2. Closed-Loop SCADA & Grid Actuation Hooks
+Interface AEGIS directly with regional SCADA protocols (IEC 60870-5-104 / DNP3) to rapidly stage circuit breaker trips and grid rerouting recommendations for human authorization seconds before water reaches transformer bushings, eliminating operational delay while preserving human supervisory control.
 
 ### 3. On-Chain Smart Contract Liquidity Relay
 Integrate automated EVM / Solana smart contract relays to disburse parametric insurance catastrophe bonds within blocks of physical trigger validation.
@@ -564,16 +589,18 @@ Integrate automated EVM / Solana smart contract relays to disburse parametric in
 
 ## Known Limitations
 
-* **Synthetic Proxy Tile Ingestion:** V-JEPA runs on a synthetic proxy tile (due to 16-frame temporal requirements vs satellite revisit rates).
-* **Static Event Snapshot:** No temporal forecasting (static event snapshot).
-* **Validation Scope:** IoU validated for Cyclone Fani only.
-* **TTS Language Support:** Odia audio is synthesized via Hindi audio fallback due to TTS limits.
+* **Synthetic Proxy Tile Ingestion:** Current V-JEPA 2 evaluation ingests a deterministic synthetic Sentinel-1 SAR proxy tile (due to 16-frame spatio-temporal tensor input requirements versus orbital satellite revisit cadences of 6–12 days). Automated real satellite raster ingestion is a Phase 2 roadmap item.
+* **Static Event Snapshot Pipeline:** The current simulation models a static landfall event snapshot rather than demonstrated real-time temporal forecasting across evolving multi-day meteorological runs. Real-time temporal forecasting remains an active research horizon.
+* **Empirical Validation Scope:** Quantitative historical flood-extent validation (85.6% IoU, 86.2% Precision, 99.3% Recall, ≈92.3% F1) is demonstrated exclusively for Cyclone Fani (Puri, Odisha, May 2019, Copernicus EMSR357). The West Bengal (Amphan) and Gujarat (Biparjoy) presets represent geographic operational scenario / stress-test configurations utilizing NOAA IBTrACS trajectory data; they do not possess equivalent historical radar ground-truth validation.
+* **Representation-to-Parameter Projection:** The V-JEPA → physical-parameter mapping uses a convolutional projection head parameterized with synthetic geomorphic priors (inland moisture decay, littoral roughness boundaries). It is not presented as a scientifically calibrated or empirically trained physical model fitted to paired soil moisture ground truth.
+* **Zero Autonomous Kinetic Execution:** AEGIS operates strictly as an AI-assisted decision pipeline generating Common Alerting Protocol (CAP) advisories. It does not send live, automated commands to real municipal infrastructure, grid switchgear, or emergency agencies without explicit human authorization.
+* **Text-to-Speech (TTS) Localization:** Odia audio alerts are synthesized via Hindi phonetic audio fallback due to regional language limitations in public Google TTS APIs.
 
 ---
 
 ## Contributors & Acknowledgments
 
-* **Autonomous Disaster Systems Architecture Group**
+* **AEGIS Disaster Systems Architecture Group**
 * Built with pride for high-stakes emergency resilience.
 * Empirical benchmark datasets provided by **Copernicus Emergency Management Service (EMSR357)** and **NOAA IBTrACS**.
 

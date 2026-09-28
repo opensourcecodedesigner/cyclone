@@ -7,7 +7,8 @@
   "simulated_inundation_km2": 69.41,
   "intersection_area_km2": 59.8,
   "intersection_over_union_iou_pct": 85.6,
-  "overlap_recall_pct": 99.3,
   "precision_pct": 86.2,
-  "scientific_critique": "Simplified 2D Cellular Automata diffusive scheme models gravity head equilibrium with high fidelity (85.6% IoU), but under-resolves tidal prism dynamics and micro-topographic sand dunes captured by radar satellite sensors."
+  "overlap_recall_pct": 99.3,
+  "f1_score_pct": 92.3,
+  "scientific_critique": "Simplified 2D Cellular Automata diffusive scheme models gravity head equilibrium with high fidelity (85.6% IoU, 92.3% F1), but under-resolves tidal prism dynamics and micro-topographic sand dunes captured by radar satellite sensors."
 }

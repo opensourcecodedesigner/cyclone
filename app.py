@@ -149,7 +149,7 @@ except ImportError:
 # 1. PAGE CONFIGURATION & CARTOGRAPHIC NOIR DESIGN SYSTEM
 # =============================================================================
 st.set_page_config(
-    page_title="AEGIS // Autonomous Cyclone Surge Command Center",
+    page_title="AEGIS // Cyclone Surge Incident Command Center",
     page_icon="🌀",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -529,7 +529,7 @@ SCENARIO_PRESETS = {
         "badge_border": "rgba(16, 185, 129, 0.35)",
         "badge_text_color": "#34D399",
         "has_radar_validation": True,
-        "validation_statement": "Calibrated against Copernicus EMSR357 radar ground truth (85.6% IoU, 99.3% Recall).",
+        "validation_statement": "Validated against Copernicus EMSR357 radar ground truth (85.6% IoU, 86.2% Precision, 99.3% Recall, ≈92.3% F1).",
         "coordinates": ASSET_COORDINATES_ODISHA,
         "nodes": LIVE_INFRASTRUCTURE_NODES_ODISHA
     },
@@ -643,7 +643,7 @@ def get_vjepa2_perception_data() -> dict:
 
     return {
         "model": "facebookresearch/vjepa2 (ViT-Large)",
-        "projection_head": "ParameterProjectionHead (Calibrated PyTorch CNN)",
+        "projection_head": "ParameterProjectionHead (PyTorch Prior Projection)",
         "parameters_m": 303.9,
         "input_tensor_shape": [1, 3, 16, 224, 224],
         "latent_tokens": 1568,
@@ -778,8 +778,9 @@ def load_backtest_metrics() -> dict:
         "simulated_inundation_km2": 69.41,
         "intersection_area_km2": 59.80,
         "intersection_over_union_iou_pct": 85.6,
+        "precision_pct": 86.2,
         "overlap_recall_pct": 99.3,
-        "precision_pct": 86.2
+        "f1_score_pct": 92.3
     }
     if os.path.exists("backtest_metrics.json"):
         try:
@@ -807,7 +808,7 @@ def get_cloud_cached_simulation_data(
     surge_default = float(scenario.get("surge_default", 5.0))
     surge_ratio = max(0.2, min(3.0, float(surge_height) / surge_default))
 
-    # Precomputed baseline depths for Odisha Fani (calibrated against Copernicus EMSR357 backtest)
+    # Precomputed baseline depths for Odisha Fani (benchmarked against Copernicus EMSR357 backtest)
     fani_baseline_depths = {
         "samuka_beach_electrical_substation": 4.0883,
         "swargadwar_coastal_boulevard": 3.8190,
@@ -1076,7 +1077,7 @@ def generate_gemini_dispatch_order(node_results: list, surge_m: float, wind_kts:
         fallback_dispatch = (
             "⚠️ GEMINI_API_KEY is not detected in your environment.\n"
             "Configure it in your .env file: GEMINI_API_KEY=\"your_key_here\"\n\n"
-            "[AUTONOMOUS COMMON ALERTING PROTOCOL (CAP) DISPATCH // DETERMINISTIC ENGINE]\n\n"
+            "[AI-ASSISTED COMMON ALERTING PROTOCOL (CAP) DISPATCH // DETERMINISTIC ENGINE]\n\n"
             "[INCIDENT HEADER]\n"
             f"• Incident: CYCLONE {scenario['cyclone_name'].upper()} STORM SURGE EMERGENCY ({scenario['state'].upper()} - {scenario['district'].upper()})\n"
             f"• Authority: {scenario['state']} State Disaster Management Authority ({scenario['state'][:3].upper()}SDMA)\n"
@@ -1146,8 +1147,8 @@ def generate_gemini_dispatch_order(node_results: list, surge_m: float, wind_kts:
 
         # 3. System 2 Tactical Dispatch Order
         dispatch_prompt = f"""
-        You are the Chief Autonomous Incident Commander for Cyclone Disaster Management (AEGIS) deployed for {scenario['state']} ({scenario['district']}) during Cyclone {scenario['cyclone_name']} ({scenario['cyclone_year']}).
-        Formulate an urgent, authoritative COMMON ALERTING PROTOCOL (CAP) Tactical Dispatch Order.
+        You are the AI Tactical Incident Advisor for Cyclone Disaster Management (AEGIS) assisting human incident command for {scenario['state']} ({scenario['district']}) during Cyclone {scenario['cyclone_name']} ({scenario['cyclone_year']}).
+        Formulate an urgent, authoritative COMMON ALERTING PROTOCOL (CAP) Tactical Dispatch Advisory for human authorization.
 
         EVENT TELEMETRY:
         - Incident: Cyclone {scenario['cyclone_name']} Landfall ({scenario['district']}, {scenario['state']})
@@ -1600,7 +1601,7 @@ def render_satellite_perception_inspector():
     latent_toks = perception_data.get("latent_tokens", 1568) if perception_data else 1568
     embed_dim = perception_data.get("embedding_dim", 1024) if perception_data else 1024
     input_shape = perception_data.get("input_tensor_shape", [1, 3, 16, 224, 224]) if perception_data else [1, 3, 16, 224, 224]
-    head_name = perception_data.get("projection_head", "ParameterProjectionHead (Calibrated PyTorch CNN)")
+    head_name = perception_data.get("projection_head", "ParameterProjectionHead (PyTorch Prior Projection)")
 
     status_badge = '<span class="badge-live" style="background: rgba(245, 158, 11, 0.15); color: #FBBF24; border-color: rgba(245, 158, 11, 0.35);">🟡 SYNTHETIC SENTINEL-1 SAR PROXY TILE (AUDITED BASELINE)</span>'
 
@@ -1680,6 +1681,7 @@ with tab_live:
             iou_val = val_metrics_data.get("intersection_over_union_iou_pct", 85.6)
             rec_val = val_metrics_data.get("overlap_recall_pct", 99.3)
             prec_val = val_metrics_data.get("precision_pct", 86.2)
+            f1_val = val_metrics_data.get("f1_score_pct", 92.3)
             gt_area = val_metrics_data.get("ground_truth_inundation_km2", 60.23)
             sim_area = val_metrics_data.get("simulated_inundation_km2", 69.41)
             inter_area = val_metrics_data.get("intersection_area_km2", 59.80)
@@ -1701,14 +1703,19 @@ with tab_live:
                         <div style="font-size: 0.65rem; color: #60A5FA;">Empirical Fit Index</div>
                     </div>
                     <div style="background: rgba(14, 17, 23, 0.7); border: 1px solid rgba(48, 54, 61, 0.5); border-radius: 4px; padding: 6px 8px;">
-                        <div style="font-size: 0.68rem; color: #8B949E; text-transform: uppercase;">Spatial Overlap / Recall</div>
+                        <div style="font-size: 0.68rem; color: #8B949E; text-transform: uppercase;">Spatial Precision</div>
+                        <div style="font-size: 1.15rem; font-weight: 800; color: #A78BFA;">{prec_val}%</div>
+                        <div style="font-size: 0.65rem; color: #8B5CF6;">Low False Alarms</div>
+                    </div>
+                    <div style="background: rgba(14, 17, 23, 0.7); border: 1px solid rgba(48, 54, 61, 0.5); border-radius: 4px; padding: 6px 8px;">
+                        <div style="font-size: 0.68rem; color: #8B949E; text-transform: uppercase;">Spatial Recall</div>
                         <div style="font-size: 1.15rem; font-weight: 800; color: #34D399;">{rec_val}%</div>
                         <div style="font-size: 0.65rem; color: #10B981;">Flood Recovery</div>
                     </div>
                     <div style="background: rgba(14, 17, 23, 0.7); border: 1px solid rgba(48, 54, 61, 0.5); border-radius: 4px; padding: 6px 8px;">
-                        <div style="font-size: 0.68rem; color: #8B949E; text-transform: uppercase;">Spatial Precision</div>
-                        <div style="font-size: 1.15rem; font-weight: 800; color: #A78BFA;">{prec_val}%</div>
-                        <div style="font-size: 0.65rem; color: #8B5CF6;">Radar Match</div>
+                        <div style="font-size: 0.68rem; color: #8B949E; text-transform: uppercase;">Harmonic F1 Score</div>
+                        <div style="font-size: 1.15rem; font-weight: 800; color: #38BDF8;">{f1_val}%</div>
+                        <div style="font-size: 0.65rem; color: #60A5FA;">2PR / (P + R)</div>
                     </div>
                     <div style="background: rgba(14, 17, 23, 0.7); border: 1px solid rgba(48, 54, 61, 0.5); border-radius: 4px; padding: 6px 8px;">
                         <div style="font-size: 0.68rem; color: #8B949E; text-transform: uppercase;">Radar Ground Truth</div>
@@ -1716,9 +1723,9 @@ with tab_live:
                         <div style="font-size: 0.65rem; color: #FBBF24;">EMSR357 Delineation</div>
                     </div>
                     <div style="background: rgba(14, 17, 23, 0.7); border: 1px solid rgba(48, 54, 61, 0.5); border-radius: 4px; padding: 6px 8px;">
-                        <div style="font-size: 0.68rem; color: #8B949E; text-transform: uppercase;">Intersection Area</div>
-                        <div style="font-size: 1.15rem; font-weight: 800; color: #34D399;">{inter_area} km²</div>
-                        <div style="font-size: 0.65rem; color: #10B981;">Sim: {sim_area} km²</div>
+                        <div style="font-size: 0.68rem; color: #8B949E; text-transform: uppercase;">Simulated Footprint</div>
+                        <div style="font-size: 1.15rem; font-weight: 800; color: #34D399;">{sim_area} km²</div>
+                        <div style="font-size: 0.65rem; color: #10B981;">Inter: {inter_area} km²</div>
                     </div>
                 </div>
             </div>
@@ -1933,7 +1940,7 @@ with tab_live:
             dispatch_text = st.session_state.get("dispatch_order", "No dispatch generated.")
             st.markdown(f'<div class="dispatch-console">{dispatch_text}</div>', unsafe_allow_html=True)
 
-            # Alert Dispatched Confirmation Panel (Multi-Agency Delivery Receipt)
+            # Alert Dispatched Confirmation Panel (Multi-Agency Simulated Delivery Receipt)
             if st.session_state.get("dispatch_order"):
                 dispatch_time = st.session_state.get("dispatch_timestamp") or datetime.now().strftime("%Y-%m-%d %H:%M:%S IST")
                 st.markdown(f"""
@@ -2047,7 +2054,7 @@ with tab_live:
             with vp4:
                 st.metric("GPU VRAM Used", f"{vram_val:.0f} MB", delta=f"{gpu_device} ({vram_tot:.0f} MB)")
 
-            st.caption(f"ℹ️ **Perception Provenance:** Meta V-JEPA 2 ViT-L processed a deterministic synthetic Sentinel-1 SAR proxy tile ({vjepa_info.get('latent_tokens', 1568)} tokens × {vjepa_info.get('embedding_dim', 1024)} dim) with calibrated ParameterProjectionHead. Effective cellular automata iterations modulated to **{eff_iters}**.")
+            st.caption(f"ℹ️ **Perception Provenance:** Meta V-JEPA 2 ViT-L processed a deterministic synthetic Sentinel-1 SAR proxy tile ({vjepa_info.get('latent_tokens', 1568)} tokens × {vjepa_info.get('embedding_dim', 1024)} dim) with ParameterProjectionHead. Effective cellular automata iterations modulated to **{eff_iters}**.")
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown(
@@ -2095,7 +2102,7 @@ with tab_validation:
     st.markdown('<div class="aegis-header"><div><div class="aegis-title">🛰️ Historical Validation // Cyclone Fani (May 2019)</div><div style="font-size: 0.85rem; color: #8B949E; margin-top: 4px;">Empirical ground truth benchmark: AEGIS 2D Cellular Automata vs. <strong>Copernicus EMS Rapid Mapping Activation EMSR357</strong> (TerraSAR-X / COSMO-SkyMed Radar Constellation).</div></div><span class="badge-live">GROUND TRUTH OVERLAY</span></div>', unsafe_allow_html=True)
 
     st.info(
-        "🔬 **Scope & Provenance Note:** Radar ground truth validation against Copernicus EMSR357 (85.6% IoU, 99.3% Recall) is documented exclusively for the **Cyclone Fani (Odisha)** landfall. "
+        "🔬 **Scope & Provenance Note:** Radar ground truth validation against Copernicus EMSR357 (85.6% IoU, 86.2% Precision, 99.3% Recall, ≈92.3% F1) is documented exclusively for the **Cyclone Fani (Odisha)** landfall. "
         "The **West Bengal (Amphan)** and **Gujarat (Biparjoy)** scenarios are forward operational presets driven by public NOAA IBTrACS geographic tracks; no backtested radar IoU metric is claimed for them."
     )
 
@@ -2103,15 +2110,17 @@ with tab_validation:
     val_metrics = load_backtest_metrics()
 
     # Validation KPIs
-    vkpi1, vkpi2, vkpi3, vkpi4 = st.columns(4)
+    vkpi1, vkpi2, vkpi3, vkpi4, vkpi5 = st.columns(5)
     with vkpi1:
-        st.metric("Copernicus Radar Truth", f"{val_metrics['ground_truth_inundation_km2']} km²", delta="EMSR357 Delineation")
+        st.metric("Spatial IoU", f"{val_metrics.get('intersection_over_union_iou_pct', 85.6)}%", delta="Empirical Fit Index")
     with vkpi2:
-        st.metric("AEGIS Simulated Inundation", f"{val_metrics['simulated_inundation_km2']} km²", delta="2D Cellular Automata")
+        st.metric("Precision", f"{val_metrics.get('precision_pct', 86.2)}%", delta="Low False Alarms")
     with vkpi3:
-        st.metric("Spatial Overlap / Recall", f"{val_metrics['overlap_recall_pct']}%", delta="Flood Footprint Recovery")
+        st.metric("Recall", f"{val_metrics.get('overlap_recall_pct', 99.3)}%", delta="Hazard Detection")
     with vkpi4:
-        st.metric("Intersection over Union (IoU)", f"{val_metrics['intersection_over_union_iou_pct']}%", delta="Empirical Fit Index")
+        st.metric("Harmonic F1", f"{val_metrics.get('f1_score_pct', 92.3)}%", delta="2PR / (P + R)")
+    with vkpi5:
+        st.metric("Radar Intersection", f"{val_metrics.get('intersection_area_km2', 59.80)} km²", delta=f"Sim: {val_metrics.get('simulated_inundation_km2', 69.41)} km²")
 
     st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
 
@@ -2212,16 +2221,17 @@ with tab_validation:
     with vcol_critique:
         st.markdown('<div class="noir-card-header"><span>🔬 Scientific Critique & Physical Variance Analysis</span></div>', unsafe_allow_html=True)
 
-        # Honest Scientific Critique Callout
         iou_display = val_metrics.get("intersection_over_union_iou_pct", 85.6)
+        precision_display = val_metrics.get("precision_pct", 86.2)
         recall_display = val_metrics.get("overlap_recall_pct", 99.3)
+        f1_display = val_metrics.get("f1_score_pct", 92.3)
         st.markdown(f"""
         <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35); border-left: 4px solid #F59E0B; border-radius: 6px; padding: 12px 16px; margin-bottom: 12px;">
             <div style="font-weight: 800; color: #FBBF24; font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;">
-                ⚠️ ACCURACY & LIMITATION DISCLOSURE ({iou_display:.1f}% IoU vs. Satellite Radar)
+                ⚠️ ACCURACY & LIMITATION DISCLOSURE ({iou_display:.1f}% IoU, {f1_display:.1f}% F1 vs. Satellite Radar)
             </div>
             <div style="font-size: 0.80rem; color: #C9D1D9; line-height: 1.55;">
-                The AEGIS 2D Cellular Automata engine achieves an <strong>{recall_display:.1f}% overlap recall</strong> and <strong>{iou_display:.1f}% Intersection over Union (IoU)</strong> against Copernicus EMSR357 satellite radar. The observed variance is expected and primarily attributable to:
+                The AEGIS 2D Cellular Automata engine achieves <strong>{iou_display:.1f}% IoU</strong>, <strong>{precision_display:.1f}% precision</strong>, <strong>{recall_display:.1f}% recall</strong>, and <strong>{f1_display:.1f}% F1</strong> against Copernicus EMSR357 satellite radar. The observed variance is expected and primarily attributable to:
                 <ul style="margin: 6px 0 0 14px; padding: 0;">
                     <li><strong>Diffusive vs. Navier-Stokes Scheme:</strong> Simplified 2D CA diffusive wave routing captures gravity head equilibrium, but omits dynamic momentum advection and coastal breaker zone wave setup.</li>
                     <li><strong>Tidal Prism Coupling:</strong> Does not simulate astronomical spring-tide amplification in the adjacent Chilika lagoon estuary.</li>

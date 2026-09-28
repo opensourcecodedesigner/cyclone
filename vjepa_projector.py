@@ -1,9 +1,17 @@
 """
 ===============================================================================
-AEGIS: CALIBRATED V-JEPA 2 PARAMETER PROJECTION HEAD
+AEGIS: V-JEPA 2 PARAMETER PROJECTION HEAD (GEOMORPHIC PRIOR PARAMETERIZATION)
 ===============================================================================
-Replaces uncalibrated ad-hoc channel-slicing heuristics with a calibrated
-PyTorch projection network (ParameterProjectionHead).
+Projects frozen Meta V-JEPA 2 ViT-L latent embeddings into 2D hydrodynamic
+parameter grids for Julia 2D Cellular Automata simulation using geomorphic
+prior parameterization.
+
+NOTE ON CALIBRATION / PROJECTION:
+This module projects V-JEPA 2 latent representations into hydrodynamic
+parameters (soil saturation and Manning's n roughness) by parameterizing
+weights against synthetic coastal geomorphic spatial priors. It is an
+engineered representation-to-parameter mapping, not a scientifically
+calibrated empirical model fitted to paired ground-truth physical soil moisture data.
 
 Architecture & Mechanics:
 1. Ingests frozen Meta V-JEPA 2 ViT-L latent embeddings:
@@ -37,8 +45,9 @@ CHECKPOINT_PATH = os.path.join(BASE_DIR, "perception_cache", "vjepa_projector_ca
 
 class ParameterProjectionHead(nn.Module):
     """
-    Calibrated PyTorch projection network translating frozen V-JEPA 2 latent embeddings
-    into 2D spatially varying hydrodynamic parameter grids for Julia physics solvers.
+    PyTorch projection network translating frozen V-JEPA 2 latent embeddings
+    into 2D spatially varying hydrodynamic parameter grids for Julia physics solvers
+    based on geomorphic prior parameterization.
     """
     def __init__(
         self,
@@ -156,8 +165,8 @@ def calibrate_projector_weights(
     verbose: bool = False
 ) -> ParameterProjectionHead:
     """
-    Calibrates the projection head so spatial features align with empirical
-    coastal geomorphology (Chilika estuary wetland saturation, sand dune roughness).
+    Parameterizes the projection head weights so spatial features align with synthetic
+    coastal geomorphology priors (wetland saturation gradient, sand dune roughness).
     """
     device = next(projector.parameters()).device
     features = sample_features.to(device)

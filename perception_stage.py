@@ -291,7 +291,7 @@ def extract_vjepa2_features(encoder, device, tile_tensor: torch.Tensor) -> dict:
     with torch.no_grad():
         features = encoder(inp)  # [1, 1568, 1024]
 
-        # Calibrated PyTorch parameter projection head
+        # PyTorch parameter projection head
         try:
             from vjepa_projector import get_or_create_calibrated_projector
             projector = get_or_create_calibrated_projector(features.float(), str(device))
@@ -306,7 +306,7 @@ def extract_vjepa2_features(encoder, device, tile_tensor: torch.Tensor) -> dict:
             saturation_grid_list = sat_grid.round(4).tolist()
             manning_grid_list = man_grid.round(5).tolist()
             friction_grid_list = friction_multiplier_grid.tolist()
-            projection_method = "ParameterProjectionHead (Calibrated PyTorch CNN)"
+            projection_method = "ParameterProjectionHead (PyTorch Prior Projection)"
         except Exception as e:
             emb_mean = features.mean(dim=1).squeeze(0).cpu().float().numpy()
             emb_var  = features.var(dim=1).squeeze(0).cpu().float().numpy()

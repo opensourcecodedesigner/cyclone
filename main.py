@@ -1,6 +1,6 @@
 """
 ===============================================================================
-AEGIS: AUTONOMOUS CYCLONE DISASTER PIPELINE (LANGGRAPH + LLAMA-INDEX + GEMINI)
+AEGIS: AI-ASSISTED CYCLONE DISASTER PIPELINE (LANGGRAPH + LLAMA-INDEX + GEMINI)
 ===============================================================================
 State Machine Architecture:
 1. Node 1 (System 1 Triage Router): Evaluates hydrodynamic physics telemetry
@@ -8,8 +8,8 @@ State Machine Architecture:
 2. Conditional Edge (Switch): Emergency -> RAG Retrieval; Safe -> Early Halt.
 3. Node 2 (LlamaIndex RAG): Retrieves department-specific Standard Operating
    Procedures (SOPs) from the local Visakhapatnam knowledge base.
-4. Node 3 (System 2 Dispatch Commander): Synthesizes physics data and SOPs
-   into an authoritative, tactical emergency dispatch order.
+4. Node 3 (System 2 Dispatch Synthesizer): Synthesizes physics data and SOPs
+   into a structured tactical emergency advisory order for human authorization.
 ===============================================================================
 """
 
@@ -370,7 +370,7 @@ if __name__ == "__main__":
         except Exception as err:
             print(f"Note: Could not reach Julia server ({err}), using simulation output benchmark.")
 
-    print("Starting AEGIS Autonomous Pipeline...")
+    print("Starting AEGIS Decision Pipeline (Human Authorization Required)...")
     final_state = aegis_pipeline.invoke({"node_results": test_data})
     
     if "final_dispatch" in final_state:

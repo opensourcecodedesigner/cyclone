@@ -377,6 +377,7 @@ def generate_fani_geojson_layers(max_inland_m: float) -> Tuple[str, str, dict]:
     iou = round((intersection_area / union_area) * 100, 1)
     overlap_recall = round((intersection_area / area_truth) * 100, 1)
     precision = round((intersection_area / area_sim) * 100, 1)
+    f1_score = round(2 * (precision * overlap_recall) / (precision + overlap_recall), 1) if (precision + overlap_recall) > 0 else 0.0
 
     metrics = {
         "event": "Cyclone Fani (May 2019) Landfall Validation",
@@ -387,10 +388,11 @@ def generate_fani_geojson_layers(max_inland_m: float) -> Tuple[str, str, dict]:
         "simulated_inundation_km2": area_sim,
         "intersection_area_km2": intersection_area,
         "intersection_over_union_iou_pct": iou,
-        "overlap_recall_pct": overlap_recall,
         "precision_pct": precision,
+        "overlap_recall_pct": overlap_recall,
+        "f1_score_pct": f1_score,
         "scientific_critique": (
-            f"Simplified 2D Cellular Automata diffusive scheme models gravity head equilibrium with high fidelity ({iou}% IoU), "
+            f"Simplified 2D Cellular Automata diffusive scheme models gravity head equilibrium with high fidelity ({iou}% IoU, {f1_score}% F1), "
             "but under-resolves tidal prism dynamics and micro-topographic sand dunes captured by radar satellite sensors."
         )
     }
@@ -399,7 +401,7 @@ def generate_fani_geojson_layers(max_inland_m: float) -> Tuple[str, str, dict]:
         json.dump(metrics, f, indent=2)
 
     print(f"   -> Real geometric intersection computed via Shapely: {intersection_area} km2")
-    print(f"   -> Accuracy: IoU = {iou}% | Overlap/Recall = {overlap_recall}% | Precision = {precision}%")
+    print(f"   -> Accuracy: IoU = {iou}% | Precision = {precision}% | Overlap/Recall = {overlap_recall}% | F1 = {f1_score}%")
     return sim_file, truth_file, metrics
 
 # =============================================================================
